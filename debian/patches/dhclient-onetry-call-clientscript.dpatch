@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## dhclient-onetry-call-clientscript.dpatch by Martin Pitt <martin.pitt@ubuntu.com>
+##
+## DP: Call 'dhclient-script FAIL' when failing to get an address also when
+## DP: operating in oneshot mode (-1). This fixes avahi-autoipd invocation
+## DP: through dhcdbd. (Debian #486520)
+
+@DPATCH@
+diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' '--exclude=.hg' '--exclude=_darcs' '--exclude=.bzr' isc-dhcp~/client/dhclient.c isc-dhcp/client/dhclient.c
+--- isc-dhcp~/client/dhclient.c	2010-11-01 17:22:25.000000000 +0000
++++ isc-dhcp/client/dhclient.c	2010-11-01 17:22:26.000000000 +0000
+@@ -1939,6 +1939,8 @@
+ 		if (!quiet)
+ 			log_info ("Unable to obtain a lease on first try.%s",
+ 				  "  Exiting.");
++		script_init (client, "FAIL", (struct string_list *)0);
++		script_go (client);
+ 		exit (2);
+ 	}
+ 

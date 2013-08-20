@@ -1,0 +1,17 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## dhcpd.conf-subnet-examples.dpatch by Martin Pitt <martin.pitt@ubuntu.com>
+##
+## DP: Give an example for subnet-mask in dhcpd.conf. (LP #26661)
+
+@DPATCH@
+diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' '--exclude=.hg' '--exclude=_darcs' '--exclude=.bzr' isc-dhcp~/server/dhcpd.conf isc-dhcp/server/dhcpd.conf
+--- isc-dhcp~/server/dhcpd.conf	2002-08-13 01:55:17.000000000 +0100
++++ isc-dhcp/server/dhcpd.conf	2010-11-01 17:22:16.000000000 +0000
+@@ -49,6 +49,7 @@
+   option domain-name-servers ns1.internal.example.org;
+   option domain-name "internal.example.org";
+   option routers 10.5.5.1;
++  option subnet-mask 255.255.255.224;
+   option broadcast-address 10.5.5.31;
+   default-lease-time 600;
+   max-lease-time 7200;

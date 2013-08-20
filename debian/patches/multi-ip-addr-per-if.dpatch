@@ -1,0 +1,123 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+# Description: Resolve issue of interfaces not being
+#  able to have more than one IP address assigned.
+# Author: Daniel Nurmi <nurmi@eucalyptus.com >
+# Bug-Ubuntu: https://launchpad.net/bugs/717166
+# Last-Update: 2011-03-16
+
+@DPATCH@
+diff -urNad isc-dhcp~/common/discover.c isc-dhcp/common/discover.c
+--- isc-dhcp~/common/discover.c	2011-03-16 07:49:44.000000000 +0000
++++ isc-dhcp/common/discover.c	2011-03-16 07:55:29.348030652 +0000
+@@ -377,7 +377,7 @@
+  *
+  * Linux low level access is documented in the netdevice man page.
+  */
+-
++#include <ifaddrs.h>
+ /* 
+  * Structure holding state about the scan.
+  */
+@@ -983,59 +983,79 @@
+ 			(*dhcp_interface_discovery_hook)(tmp);
+ 		}
+ 
+-		if ((info.addr.ss_family == AF_INET) && 
+-		    (local_family == AF_INET)) {
+-			struct sockaddr_in *a = (struct sockaddr_in*)&info.addr;
+-			struct iaddr addr;
++		{
++		  struct ifaddrs *ifaddr, *ifa;
++		  getifaddrs(&ifaddr);
++		  for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
++		    if ( (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET) && 
++			 (local_family == AF_INET)) {
++		      struct sockaddr_in *a = (struct sockaddr_in *)ifa->ifa_addr;
++		      struct iaddr addr;
++		      char *s=NULL;
+ 
++		      s = strchr(ifa->ifa_name, ':');
++		      if (s != NULL) {
++			*s = '\0';
++		      }
++		      if (!strcmp(ifa->ifa_name, info.name)) {
+ 			/* We don't want the loopback interface. */
+ 			if (a->sin_addr.s_addr == htonl(INADDR_LOOPBACK) &&
+ 			    ((tmp->flags & INTERFACE_AUTOMATIC) &&
+ 			     state == DISCOVER_SERVER))
+-				continue;
+-
++			  continue;
++			
+ 			/* If the only address we have is 0.0.0.0, we
+ 			   shouldn't consider the interface configured. */
+ 			if (a->sin_addr.s_addr != htonl(INADDR_ANY))
+-				tmp->configured = 1;
+-
++			  tmp->configured = 1;
++
+ 			add_ipv4_addr_to_interface(tmp, &a->sin_addr);
+-
++
+ 			/* invoke the setup hook */
+ 			addr.len = 4;
+ 			memcpy(addr.iabuf, &a->sin_addr.s_addr, addr.len);
+ 			if (dhcp_interface_setup_hook) {
+-				(*dhcp_interface_setup_hook)(tmp, &addr);
++			  (*dhcp_interface_setup_hook)(tmp, &addr);
+ 			}
+-		}
++		      }	 
++		    } 
+ #ifdef DHCPv6
+-		else if ((info.addr.ss_family == AF_INET6) && 
+-			 (local_family == AF_INET6)) {
+-			struct sockaddr_in6 *a = 
+-					(struct sockaddr_in6*)&info.addr;
+-			struct iaddr addr;
++		    else if ( (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET6) && 
++			      (local_family == AF_INET6)) {
++		      struct sockaddr_in6 *a = 
++			(struct sockaddr_in6*)ifa->ifa_addr;
++		      struct iaddr addr;
++		      char *s=NULL;
+ 
++		      s = strchr(ifa->ifa_name, ':');
++		      if (s != NULL) {
++			*s = '\0';
++		      }		      
++		      if (!strcmp(ifa->ifa_name, info.name)) {
+ 			/* We don't want the loopback interface. */
+ 			if (IN6_IS_ADDR_LOOPBACK(&a->sin6_addr) && 
+ 			    ((tmp->flags & INTERFACE_AUTOMATIC) &&
+ 			     state == DISCOVER_SERVER))
+-			    continue;
+-
++			  continue;
++			
+ 			/* If the only address we have is 0.0.0.0, we
+ 			   shouldn't consider the interface configured. */
+ 			if (IN6_IS_ADDR_UNSPECIFIED(&a->sin6_addr))
+-				tmp->configured = 1;
+-
++			  tmp->configured = 1;
++			
+ 			add_ipv6_addr_to_interface(tmp, &a->sin6_addr);
+-
++			
+ 			/* invoke the setup hook */
+ 			addr.len = 16;
+ 			memcpy(addr.iabuf, &a->sin6_addr, addr.len);
+ 			if (dhcp_interface_setup_hook) {
+-				(*dhcp_interface_setup_hook)(tmp, &addr);
++			  (*dhcp_interface_setup_hook)(tmp, &addr);
+ 			}
+-		}
++		      }
++		    }
+ #endif /* DHCPv6 */
++		  }
++		}
+ 	}
+ 
+ 	if (err) {

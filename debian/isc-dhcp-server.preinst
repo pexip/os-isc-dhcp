@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+if dpkg --compare-versions "$2" lt 4.0 &&
+  [ -f /etc/default/dhcp3-server ] &&
+  [ ! -f /etc/default/isc-dhcp-server ]; then
+    echo "Copying /etc/default/dhcp3-server to /etc/default/isc-dhcp-server"
+    cp /etc/default/dhcp3-server /etc/default/isc-dhcp-server
+fi
+
+#DEBHELPER#
