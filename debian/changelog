@@ -1,3 +1,9 @@
+isc-dhcp (4.1.ESV-R4-0ubuntu5.9pexip1) pexip; urgency=low
+
+  * Prepare Pexip packaging
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 24 Dec 2013 21:15:56 +0000
+
 isc-dhcp (4.1.ESV-R4-0ubuntu5.9) precise-proposed; urgency=low
 
   * debian/dhclient-script.linux: Allow stateless DHCPv6 to complete
