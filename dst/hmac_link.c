@@ -1,10 +1,8 @@
 #ifdef HMAC_MD5
-#ifndef LINT
-static const char rcsid[] = "$Header: /proj/cvs/prod/DHCP/dst/hmac_link.c,v 1.3 2007-12-06 00:50:22 dhankins Exp $";
-#endif
 /*
  * Portions Copyright (c) 1995-1998 by Trusted Information Systems, Inc.
- * Portions Copyright (c) 2007 by Internet Systems Consortium, Inc. ("ISC")
+ * Portions Copyright (c) 2007,2009 by Internet Systems Consortium, Inc. ("ISC")
+ * Portions Copyright (c) 2012,2014 by Internet Systems Consortium, Inc. ("ISC")
  *
  * Permission to use, copy modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -34,7 +32,8 @@ static const char rcsid[] = "$Header: /proj/cvs/prod/DHCP/dst/hmac_link.c,v 1.3 
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#include "minires/minires.h"
+#include "cdefs.h"
+#include "osdep.h"
 #include "arpa/nameser.h"
 
 #include "dst_internal.h"
@@ -86,16 +85,16 @@ dst_hmac_md5_sign(const int mode, DST_KEY *d_key, void **context,
 	int sign_len = 0;
 	MD5_CTX *ctx = NULL;
 
+	if (d_key == NULL || d_key->dk_KEY_struct == NULL)
+		return (-1);
+	key = (HMAC_Key *) d_key->dk_KEY_struct;
+
 	if (mode & SIG_MODE_INIT) 
 		ctx = (MD5_CTX *) malloc(sizeof(*ctx));
 	else if (context)
 		ctx = (MD5_CTX *) *context;
 	if (ctx == NULL) 
 		return (-1);
-
-	if (d_key == NULL || d_key->dk_KEY_struct == NULL)
-		return (-1);
-	key = (HMAC_Key *) d_key->dk_KEY_struct;
 
 	if (mode & SIG_MODE_INIT) {
 		MD5Init(ctx);
@@ -153,6 +152,10 @@ dst_hmac_md5_verify(const int mode, DST_KEY *d_key, void **context,
 	HMAC_Key *key;
 	MD5_CTX *ctx = NULL;
 
+	if (d_key == NULL || d_key->dk_KEY_struct == NULL)
+		return (-1);
+	key = (HMAC_Key *) d_key->dk_KEY_struct;
+
 	if (mode & SIG_MODE_INIT) 
 		ctx = (MD5_CTX *) malloc(sizeof(*ctx));
 	else if (context)
@@ -160,10 +163,6 @@ dst_hmac_md5_verify(const int mode, DST_KEY *d_key, void **context,
 	if (ctx == NULL) 
 		return (-1);
 
-	if (d_key == NULL || d_key->dk_KEY_struct == NULL)
-		return (-1);
-
-	key = (HMAC_Key *) d_key->dk_KEY_struct;
 	if (mode & SIG_MODE_INIT) {
 		MD5Init(ctx);
 		MD5Update(ctx, key->hk_ipad, HMAC_LEN);
@@ -215,8 +214,11 @@ dst_buffer_to_hmac_md5(DST_KEY *dkey, const u_char *key, const unsigned keylen)
 	HMAC_Key *hkey = NULL;
 	MD5_CTX ctx;
 	unsigned local_keylen = keylen;
+	u_char tk[MD5_LEN];
 
-	if (dkey == NULL || key == NULL || keylen < 0)
+	/* Do we need to check if keylen == 0?  The original
+	 * code didn't, so we don't currently */
+	if (dkey == NULL || key == NULL)
 		return (-1);
 
 	if ((hkey = (HMAC_Key *) malloc(sizeof(HMAC_Key))) == NULL)
@@ -227,7 +229,7 @@ dst_buffer_to_hmac_md5(DST_KEY *dkey, const u_char *key, const unsigned keylen)
 
 	/* if key is longer than HMAC_LEN bytes reset it to key=MD5(key) */
 	if (keylen > HMAC_LEN) {
-		u_char tk[MD5_LEN];
+		memset(tk, 0, sizeof(tk));
 		MD5Init(&ctx);
 		MD5Update(&ctx, (const unsigned char *)key, keylen);
 		MD5Final(tk, &ctx);
@@ -268,7 +270,7 @@ dst_hmac_md5_key_to_file_format(const DST_KEY *dkey, char *buff,
 			    const unsigned buff_len)
 {
 	char *bp;
-	int i;
+	int i, res;
 	unsigned len, b_len, key_len;
 	u_char key[HMAC_LEN];
 	HMAC_Key *hkey;
@@ -298,9 +300,10 @@ dst_hmac_md5_key_to_file_format(const DST_KEY *dkey, char *buff,
 	bp += strlen("Key: ");
 	b_len = buff_len - (bp - buff);
 
-	len = b64_ntop(key, key_len, bp, b_len);
-	if (len < 0) 
+	res = b64_ntop(key, key_len, bp, b_len);
+	if (res < 0) 
 		return (-1);
+	len = (unsigned) res;
 	bp += len;
 	*(bp++) = '\n';
 	*bp = '\0';
@@ -349,6 +352,9 @@ dst_hmac_md5_key_from_file_format(DST_KEY *dkey, const char *buff,
 		return (-4);
 	len = eol - p;
 	tmp = malloc(len + 2);
+	if (tmp == NULL)
+		return (-5);
+
 	memcpy(tmp, p, len);
 	*(tmp + len) = 0x0;
 	key_len = b64_pton((char *)tmp, key, HMAC_LEN+1);	/* see above */
@@ -441,6 +447,8 @@ dst_hmac_md5_generate_key(DST_KEY *key, const int nothing)
 	
 	len = size > 64 ? 64 : size;
 	buff = malloc(len+8);
+	if (buff == NULL)
+		return (-1);
 
 	n = dst_random(DST_RAND_SEMI, len, buff);
 	n += dst_random(DST_RAND_KEY, len, buff);

@@ -3,7 +3,8 @@
    Definitions for the object management API and protocol... */
 
 /*
- * Copyright (c) 2004,2007,2009 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2009,2013-2014 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004,2007 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1996-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -24,18 +25,14 @@
  *   <info@isc.org>
  *   https://www.isc.org/
  *
- * This software has been written for Internet Systems Consortium
- * by Ted Lemon in cooperation with Vixie Enterprises and Nominum, Inc.
- * To learn more about Internet Systems Consortium, see
- * ``https://www.isc.org/''.  To learn more about Vixie Enterprises,
- * see ``http://www.vix.com''.   To learn more about Nominum, Inc., see
- * ``http://www.nominum.com''.
  */
 
 #ifndef _OMAPIP_H_
 #define _OMAPIP_H_
-#include <isc-dhcp/result.h>
+#include "result.h"
 #include <stdarg.h>
+
+#include <dns/tsec.h>
 
 typedef unsigned int omapi_handle_t;
 
@@ -153,6 +150,7 @@ typedef struct auth_key {
 	char *name;
 	char *algorithm;
 	omapi_data_string_t *key;
+	dns_tsec_t *tsec_key;
 } omapi_auth_key_t;
 
 #define OMAPI_CREATE          1
@@ -350,7 +348,9 @@ isc_result_t omapi_connection_put_name (omapi_object_t *, const char *);
 isc_result_t omapi_connection_put_string (omapi_object_t *, const char *);
 isc_result_t omapi_connection_put_handle (omapi_object_t *c,
 					  omapi_object_t *h);
-
+isc_result_t omapi_connection_put_named_uint32 (omapi_object_t *,
+						const char *,
+						u_int32_t);
 isc_result_t omapi_listen (omapi_object_t *, unsigned, int);
 isc_result_t omapi_listen_addr (omapi_object_t *,
 				omapi_addr_t *, int);

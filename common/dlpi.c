@@ -526,6 +526,7 @@ ssize_t send_packet (interface, packet, raw, len, from, to, hto)
 {
 #ifdef USE_DLPI_RAW
 	double hh [32];
+	int fudge;
 #endif
 	double ih [1536 / sizeof (double)];
 	unsigned char *dbuf = (unsigned char *)ih;
@@ -533,11 +534,13 @@ ssize_t send_packet (interface, packet, raw, len, from, to, hto)
 	unsigned char dstaddr [DLPI_MAXDLADDR];
 	unsigned addrlen;
 	int result;
-	int fudge;
 
 	if (!strcmp (interface -> name, "fallback"))
 		return send_fallback (interface, packet, raw,
 				      len, from, to, hto);
+
+	if (hto == NULL && interface->anycast_mac_addr.hlen)
+		hto = &interface->anycast_mac_addr;
 
 	dbuflen = 0;
 
@@ -549,8 +552,6 @@ ssize_t send_packet (interface, packet, raw, len, from, to, hto)
 	fudge = dbuflen % 4; /* IP header must be word-aligned. */
 	memcpy (dbuf + fudge, (unsigned char *)hh, dbuflen);
 	dbuflen += fudge;
-#else
-	fudge = 0;
 #endif
 	assemble_udp_ip_header (interface, dbuf, &dbuflen, from.s_addr,
 				to -> sin_addr.s_addr, to -> sin_port,
@@ -594,7 +595,7 @@ ssize_t send_packet (interface, packet, raw, len, from, to, hto)
           else 
              memcpy ( phys, interface -> dlpi_broadcast_addr.hbuf, 
               interface -> dlpi_broadcast_addr.hlen);
-           
+
           if (sap_len < 0) { 
              memcpy ( dstaddr, phys, phys_len);
              memcpy ( (char *) &dstaddr [phys_len], sap, ABS (sap_len));

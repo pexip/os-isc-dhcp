@@ -3,7 +3,8 @@
    Subroutines providing general support for objects. */
 
 /*
- * Copyright (c) 2004,2007,2009 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2009,2013,2014 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004,2007 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1999-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -24,12 +25,6 @@
  *   <info@isc.org>
  *   https://www.isc.org/
  *
- * This software has been written for Internet Systems Consortium
- * by Ted Lemon in cooperation with Vixie Enterprises and Nominum, Inc.
- * To learn more about Internet Systems Consortium, see
- * ``https://www.isc.org/''.  To learn more about Vixie Enterprises,
- * see ``http://www.vix.com''.   To learn more about Nominum, Inc., see
- * ``http://www.nominum.com''.
  */
 
 #include "dhcpd.h"
@@ -46,6 +41,12 @@ omapi_object_type_t *dhcpctl_remote_type;
 dhcpctl_status dhcpctl_initialize ()
 {
 	isc_result_t status;
+
+	/* Set up the isc and dns library managers */
+	status = dhcp_context_create(DHCP_CONTEXT_PRE_DB | DHCP_CONTEXT_POST_DB,
+				     NULL, NULL);
+	if (status != ISC_R_SUCCESS)
+		return status;
 
 	status = omapi_init();
 	if (status != ISC_R_SUCCESS)
@@ -107,7 +108,7 @@ dhcpctl_status dhcpctl_connect (dhcpctl_handle *connection,
 					 (unsigned)port, authinfo);
 	if (status == ISC_R_SUCCESS)
 		return status;
-	if (status != ISC_R_INCOMPLETE) {
+	if (status != DHCP_R_INCOMPLETE) {
 		omapi_object_dereference (connection, MDL);
 		return status;
 	}
@@ -439,7 +440,7 @@ dhcpctl_status dhcpctl_object_update (dhcpctl_handle connection,
 	dhcpctl_remote_object_t *ro;
 
 	if (h -> type != dhcpctl_remote_type)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 	ro = (dhcpctl_remote_object_t *)h;
 
 	status = omapi_message_new (&message, MDL);
@@ -488,7 +489,7 @@ dhcpctl_status dhcpctl_object_refresh (dhcpctl_handle connection,
 	dhcpctl_remote_object_t *ro;
 
 	if (h -> type != dhcpctl_remote_type)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 	ro = (dhcpctl_remote_object_t *)h;
 
 	status = omapi_message_new (&message, MDL);
@@ -541,7 +542,7 @@ dhcpctl_status dhcpctl_object_remove (dhcpctl_handle connection,
 	dhcpctl_remote_object_t *ro;
 
 	if (h -> type != dhcpctl_remote_type)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 	ro = (dhcpctl_remote_object_t *)h;
 
 	status = omapi_message_new (&message, MDL);
