@@ -1,3 +1,12 @@
+isc-dhcp (4.1.ESV-R4-0ubuntu5.10) precise-security; urgency=medium
+
+  * SECURITY UPDATE: denial of service via incorrect UDP payload length
+    - debian/patches/CVE-2015-8605.dpatch: properly check payload length in
+      common/packet.c.
+    - CVE-2015-8605
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 11 Jan 2016 07:59:30 -0500
+
 isc-dhcp (4.1.ESV-R4-0ubuntu5.9) precise-proposed; urgency=low
 
   * debian/dhclient-script.linux: Allow stateless DHCPv6 to complete
