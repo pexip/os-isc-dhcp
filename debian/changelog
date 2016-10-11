@@ -1,3 +1,9 @@
+isc-dhcp (4.1.ESV-R4-0ubuntu5.10pexip2) pexip; urgency=low
+
+  * Rebuild against libssl1.0.2
+
+ -- John-Mark Bell <jmb@pexip.com>  Wed, 12 Oct 2016 00:40:12 +0100
+
 isc-dhcp (4.1.ESV-R4-0ubuntu5.10pexip1) pexip; urgency=low
 
   * New upstream release
