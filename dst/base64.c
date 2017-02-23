@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004,2009 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004,2009,2014 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1996-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -46,10 +46,6 @@
  * IF IBM IS APPRISED OF THE POSSIBILITY OF SUCH DAMAGES.
  */
 
-#if !defined(LINT) && !defined(CODECENTER)
-static const char rcsid[] = "$Id: base64.c,v 1.2.786.2 2009-07-24 22:04:52 sar Exp $";
-#endif /* not lint */
-
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/socket.h>
@@ -64,7 +60,8 @@ static const char rcsid[] = "$Id: base64.c,v 1.2.786.2 2009-07-24 22:04:52 sar E
 
 #include <sys/socket.h>
 
-#include "minires/minires.h"
+#include "cdefs.h"
+#include "osdep.h"
 #include "arpa/nameser.h"
 
 #define Assert(Cond) if (!(Cond)) abort()

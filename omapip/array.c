@@ -3,7 +3,7 @@
    Subroutines that support the omapi extensible array type. */
 
 /*
- * Copyright (c) 2004-2007,2009 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004-2007,2009,2014 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 2001-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -24,12 +24,6 @@
  *   <info@isc.org>
  *   https://www.isc.org/
  *
- * This software has been written for Internet Systems Consortium
- * by Ted Lemon in cooperation with Vixie Enterprises and Nominum, Inc.
- * To learn more about Internet Systems Consortium, see
- * ``https://www.isc.org/''.  To learn more about Vixie Enterprises,
- * see ``http://www.vix.com''.   To learn more about Nominum, Inc., see
- * ``http://www.nominum.com''.
  */
 
 #include "dhcpd.h"
@@ -46,7 +40,7 @@ isc_result_t omapi_array_allocate (omapi_array_t **array,
 	omapi_array_t *aptr;
 
 	if (!array || *array)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 	aptr = dmalloc (sizeof (omapi_array_t),file, line);
 	if (!aptr)
 		return ISC_R_NOMEMORY;
@@ -63,7 +57,7 @@ isc_result_t omapi_array_free (omapi_array_t **array,
 	int i;
 
 	if (!array || !*array)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 	aptr = *array;
 	for (i = 0; i < aptr -> count; i++)
 		if (aptr -> data [i] && aptr -> deref)
@@ -98,11 +92,11 @@ isc_result_t omapi_array_set (omapi_array_t *array, void *ptr, int index,
 	isc_result_t status;
 
 	if (!array)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 	if (!ptr)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 	if (index < 0)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 
 	/* If the proposed index is larger than the current available
 	   space in the array, make more space in the array. */
@@ -153,7 +147,7 @@ isc_result_t omapi_array_lookup (char **ptr, omapi_array_t *array, int index,
 				 const char *file, int line)
 {
 	if (!array || !ptr || *ptr || index < 0 || index >= array -> count)
-		return ISC_R_INVALIDARG;
+		return DHCP_R_INVALIDARG;
 	if (array -> data [index])
 		return (*array -> ref) (ptr,
 					array -> data [index], file, line);

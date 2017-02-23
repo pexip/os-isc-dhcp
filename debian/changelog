@@ -1,302 +1,321 @@
-isc-dhcp (4.1.ESV-R4-0ubuntu5.10pexip2) pexip; urgency=low
+isc-dhcp (4.3.1-6+deb8u2pexip1) pexip; urgency=low
 
-  * Rebuild against libssl1.0.2
+  * Migrate to Jessie
 
- -- John-Mark Bell <jmb@pexip.com>  Wed, 12 Oct 2016 00:40:12 +0100
+ -- John-Mark Bell <jmb@pexip.com>  Thu, 23 Feb 2017 20:19:31 +0000
 
-isc-dhcp (4.1.ESV-R4-0ubuntu5.10pexip1) pexip; urgency=low
+isc-dhcp (4.3.1-6+deb8u2) jessie-security; urgency=high
+
+  * Fix CVE-2015-8605: maliciously crafted IPv4 packet can cause any of the
+    running DHCP applications (server, client, or relay) to crash.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 09 Jan 2016 20:57:22 +0000
+
+isc-dhcp (4.3.1-6+deb8u1) jessie; urgency=medium
+
+  [ Michael Gilbert ]
+  * Fix error when max lease time is used on 64-bit systems (closes: #795227).
+
+ -- Bastian Blank <bastian.blank@credativ.de>  Thu, 08 Oct 2015 11:54:59 +0000
+
+isc-dhcp (4.3.1-6) unstable; urgency=medium
+
+  * Fix a regression in error handling for the server's init script
+    (closes: #775834).
+    - Thanks to François-Régis Vuillemin.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Fri, 13 Feb 2015 05:13:19 +0000
+
+isc-dhcp (4.3.1-5) unstable; urgency=medium
+
+  * Dynamically link against system bind libraries.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Thu, 16 Oct 2014 01:28:44 +0000
+
+isc-dhcp (4.3.1-4) unstable; urgency=medium
+
+  * Bump standards to 3.9.6.
+  * Correct netmask handling in dhclient-script.linux.udeb (closes: #759761).
+  * Fix missing alias_subnet_mask in dhclient-script.linux (closes: #691091).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 05 Oct 2014 22:10:15 +0000
+
+isc-dhcp (4.3.1-3) unstable; urgency=medium
+
+  * Ignore arguments passed to sourced scripts (closes: #763208).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 28 Sep 2014 21:00:36 +0000
+
+isc-dhcp (4.3.1-2) unstable; urgency=medium
+
+  * Use /bin/sh instead of /bin/bash for dhclient scripts (closes: #762923).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 27 Sep 2014 21:57:28 +0000
+
+isc-dhcp (4.3.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Avoid divide by zero issue (closes: #694650).
+  * Correct typo in dhclient-script.linux (closes: #748272).
+  * Ensure dhcpd.leases exists for the server init script (closes: #720860).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Wed, 13 Aug 2014 23:36:21 +0000
+
+isc-dhcp (4.3.1~b1-1) experimental; urgency=medium
+
+  * New upstream beta release.
+  * Add debian/README.source.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 19 Jul 2014 22:06:23 +0000
+
+isc-dhcp (4.3.0+dfsg-2) unstable; urgency=medium
+
+  * Ship dhcp-lease-list (closes: #741488).
+  * Fix lease removal in postrm (closes: #724033).
+  * Add upstream public signing key for uscan verification.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Mon, 09 Jun 2014 01:07:09 +0000
+
+isc-dhcp (4.3.0+dfsg-1) unstable; urgency=medium
+
+  * New upstream stable release.
+  * Update debian/copyright to format 1.0.
+  * Depend on iproute2 instead of iproute (closes: #742151).
+  * Depend on freebsd-net-tools for kfreebsd (closes: #738934).
+  * Acknowledge and apply the non-maintainer upload (closes: #747017).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 24 May 2014 21:54:01 +0000
+
+isc-dhcp (4.3.0a1-2.1) experimental; urgency=medium
+
+  * Non-Maintainer Upload
+  * rules: Fix bind patching.
+  * bind-patches/hurd: Add upstream patch to fix Hurd build.
+  * rules: Select proper backends in the Hurd case.
+  * dhclient-script.hurd, dhclient-script.hurd.udeb,
+    rfc3442-classless-routes.hurd: Add Hurd scripts.
+  * Closes: #616290.
+
+ -- Samuel Thibault <sthibault@debian.org>  Sun, 06 Apr 2014 22:14:44 +0200
+
+isc-dhcp (4.3.0a1-2) experimental; urgency=medium
+
+  * Remove unused template.
+  * Remove unnecessary breaks.
+  * Fix version control fields.
+  * Escape hyphens in manpages.
+  * Enable all build hardening flags.
+  * Fix init functions lintian warning.
+  * Create the /var/lib/dhcp directory (closes: #734773).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Fri, 10 Jan 2014 04:00:42 +0000
+
+isc-dhcp (4.3.0a1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Use debhelper 9 and and simplified debian rules.
+  * Use a single package for debugging symbols.
+  * Bump standards to 3.9.5.
+  * Update watch file.
+  * Use dh-autoreconf.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 21 Dec 2013 22:04:30 +0000
+
+isc-dhcp (4.2.4-7) unstable; urgency=low
+
+  * Set --with-ldapcrypto to restore openssl support (closes: #692808).
+    - Thanks to Christian Hoffmann and Stéphane Graber.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Mon, 27 May 2013 20:35:09 +0000
+
+isc-dhcp (4.2.4-6) unstable; urgency=high
+
+  * Fix cve-2013-2494: issues with regular expression handling in the embedded
+    bind library (closes: #704426).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 31 Mar 2013 23:52:58 +0000
+
+isc-dhcp (4.2.4-5) unstable; urgency=medium
+
+  * Handle dhclient.conf left behind during a prior lenny->squeeze upgrade,
+    upgrade it now to avoid an unnecessary conffile prompt (closes: #698582).
+    - Thanks to Gregor Herrmann for the patch.
+  * Also, do not copy dhclient.conf from /etc/dhcp3 anymore (closes: #700363).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Tue, 12 Feb 2013 03:14:13 +0000
+
+isc-dhcp (4.2.4-4) unstable; urgency=medium
+
+  * Run exit hooks when "dhclient -1" fails (closes: #486520).
+  * Add dhcp6.name-servers and dhcp6.domain-search to the default request
+    options in dhclient.conf (closes: #693315).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Thu, 13 Dec 2012 21:44:18 -0500
+
+isc-dhcp (4.2.4-3) unstable; urgency=high
+
+  * Maintainer security upload.
+  * Fix cve-2012-2248: as of 4.2.x the build system prefix now gets included
+    in CLIENT_PATH.  This has security implications since the build system's
+    source path is now included in dhclient's search PATH on users' systems,
+    so sanitize the prefix to not include build system paths (closes: #690532)
+    - Patch thanks to Raphael Geissert
+
+ -- Michael Gilbert <mgilbert@debian.org>  Mon, 15 Oct 2012 14:18:07 -0400
+
+isc-dhcp (4.2.4-2) unstable; urgency=low
+
+  * Fix multiple security issues (closes: #686174)
+    - cve-2012-3570: buffer overflow via lanrge hardware address length.
+    - cve-2012-3571: denial-of-service via zero-length packets.
+    - cve-2012-3954: two potential memory leaks.
+    - cve-2012-3955: server abort due to certain lease time changes.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Fri, 14 Sep 2012 00:46:11 -0400
+
+isc-dhcp (4.2.4-1) unstable; urgency=low
 
   * New upstream release
-
- -- John-Mark Bell <jmb@pexip.com>  Fri, 15 Jan 2015 16:15:43 +0000
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5.10) precise-security; urgency=medium
-
-  * SECURITY UPDATE: denial of service via incorrect UDP payload length
-    - debian/patches/CVE-2015-8605.dpatch: properly check payload length in
-      common/packet.c.
-    - CVE-2015-8605
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 11 Jan 2016 07:59:30 -0500
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5.9pexip1) pexip; urgency=low
-
-  * Prepare Pexip packaging
-
- -- John-Mark Bell <jmb@pexip.com>  Tue, 24 Dec 2013 21:15:56 +0000
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5.9) precise-proposed; urgency=low
-
-  * debian/dhclient-script.linux: Allow stateless DHCPv6 to complete
-    configuration. (LP: #1214385)
-
- -- Philipp Kern <pkern@google.com>  Tue, 20 Aug 2013 15:24:27 +0200
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5.8) precise-proposed; urgency=low
-
-  [ Dave Chiluk ]
-  * Allow dhcpd to read /etc/ldap/ldap.conf for isc-dhcp-server-ldap.
-    (LP: #1057358). Backported from Stéphane Graber's quantal patch.
-
-  [ Stéphane Graber ]
-  * Include patch from RedHat/Fedora to deal with hardware/xen/virtio offload
-    of UDP checksums. (LP: #930962)
-  * Update apparmor profile to add required the "network packet raw" rule
-    for the checksum change.
-
- -- Stéphane Graber <stgraber@ubuntu.com>  Thu, 23 May 2013 11:13:07 -0400
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5.6) precise-proposed; urgency=low
-
-  [ Scott Moser ]
-  * debian/apparmor-profile.dhcpd: use include directory to enable
-    other packages to re-use isc-dhcp-server. (LP: #1049177)
-
-  [ Stéphane Graber ]
-  * Update onetry_retry_after_initial_success to disable the onetry variable
-    early enough to actually prevent dhclient from exiting. (LP: #974284)
-  * Update droppriv patch to also call initgroups() (LP: #727837)
-
- -- Stéphane Graber <stgraber@ubuntu.com>  Tue, 18 Sep 2012 10:34:10 -0400
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5.5) precise-security; urgency=low
-
-  [ Jamie Strandboge ]
-  * debian/dhclient-script.linux: Explicitly set the PATH to that of
-    ENV_SUPATH in /etc/login.defs and unset various other variables. We need
-    to do this so /sbin/dhclient cannot abuse the environment to escape
-    AppArmor confinement via this script. Don't worry about
-    debian/dhclient-script.linux.udeb or debian/dhclient-script.kfreebsd*
-    since AppArmor isn't used in these environments.
-    - LP: #1045986
-
-  [ Marc Deslauriers ]
-  * SECURITY UPDATE: denial of service via ipv6 lease expiration time
-    reduction
-    - debian/patches/CVE-2012-3955.patch: properly handle time reduction in
-      server/dhcpv6.c, server/mdb6.c.
-    - CVE-2012-3955
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 14 Sep 2012 12:58:33 -0400
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5.2) precise-security; urgency=low
-
-  * SECURITY UPDATE: denial of service via malformed client identifiers
-    - debian/patches/CVE-2012-3571.dpatch: validate packets in
-      common/options.{c,h}.
-    - CVE-2012-3571.dpatch
-  * SECURITY UPDATE: denial of service via memory leaks
-    - debian/patches/CVE-2012-3954.dpatch: properly manage memory in
-      common/options.c and server/dhcpv6.c.
-    - CVE-2012-3954
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 25 Jul 2012 17:04:18 -0400
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5.1) precise-proposed; urgency=low
-
-  * Set -pf option for both isc-dhcp-server and isc-dhcp-server6 so they
-    create their pid files in a path that's actually writable. (LP: #985417)
-  * Also allow read access to the pid file in the apparmor profile,
-    otherwise only the initial start succeeds. (LP: #1005062)
-  * On upgrade from dhcp3-server, move /etc/default/dhcp3-server to
-    /etc/default/isc-dhcp-server. (LP: #1003971)
-  * On upgrade from dhcp3-relay, remove /etc/default/dhcp3-relay.
-    (LP: #1005547)
-  * Try to preseed isc-dhcp-relay with the values from
-    /etc/default/dhcp3-relay. (LP: #1005547)
-
- -- Stéphane Graber <stgraber@ubuntu.com>  Sun, 27 May 2012 20:41:13 -0400
-
-isc-dhcp (4.1.ESV-R4-0ubuntu5) precise; urgency=low
-
-  * When dhclient is called with -1, exit on failure to get a lease only
-    when getting the initial lease. Once backgrounded, behave exactly like
-    in normal mode. (LP: #974284)
-
- -- Stéphane Graber <stgraber@ubuntu.com>  Tue, 10 Apr 2012 14:19:23 +0200
-
-isc-dhcp (4.1.ESV-R4-0ubuntu4) precise; urgency=low
-
-  * debian/apparmor-profile.dhcpd:
-    - allow writes to the compiled in default pid file (LP: #974054)
-    - allow reads to /var/lib/wicd/* (LP: #588635)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Thu, 05 Apr 2012 07:19:11 -0500
-
-isc-dhcp (4.1.ESV-R4-0ubuntu3) precise; urgency=low
-
-  * Spawn separate IPv4 and IPv6 daemons. (LP: #944849)
-
-  * Convert /etc/init.d/isc-dhcp-server to two upstart jobs:
-    - /etc/init/isc-dhcp-server.conf (using /etc/isc-dhcp-server/dhcpd.conf)
-    - /etc/init/isc-dhcp-server6.conf (using /etc/isc-dhcp-server/dhcpd6.conf)
-
-  * Convert /etc/init.d/isc-dhcp-relay to two upstart jobs:
-    - /etc/init/isc-dhcp-relay.conf (using /etc/default/isc-dhcp-relay)
-    - /etc/init/isc-dhcp-relay6.conf (using /etc/default/isc-dhcp-relay6)
-
-  * To enable isc-dhcp-server6, create /etc/isc-dhcp-server/dhcpd6.conf
-  * To enable isc-dhcp-relay6, configure /etc/default/isc-dhcp-relay6
-
- -- Stéphane Graber <stgraber@ubuntu.com>  Tue, 06 Mar 2012 13:22:41 -0500
-
-isc-dhcp (4.1.ESV-R4-0ubuntu2) precise; urgency=low
-
-  * debian/control: Build-Depends on dh-apparmor (LP: #948132)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Tue, 06 Mar 2012 09:58:59 -0600
-
-isc-dhcp (4.1.ESV-R4-0ubuntu1) precise; urgency=low
-
-  * New upstream release (4.1-ESV-R4) (LP: #937169)
-    https://deepthought.isc.org/article/AA-00566
-  * Removed patches (now upstream):
-    - CVE-2010-3611.dpatch
-    - CVE-2011-0413.dpatch
-    - CVE-2011-0997.dpatch
-    - CVE-2011-2748-2749.dpatch
-    - CVE-2011-4539.dpatch
-    - dhclient-initial-random-delay-option.dpatch
-    - fix_groff_warnings.dpatch
-    - no-libcrypto.dpatch
-  * Refreshed patches:
-    - dhcp-4.1.0-ldap-code.dpatch
-    - fix_exit_hook_doc_manpage.dpatch
-
- -- Stéphane Graber <stgraber@ubuntu.com>  Mon, 20 Feb 2012 13:05:01 -0500
-
-isc-dhcp (4.1.1-P1-17ubuntu13) precise; urgency=low
-
-  * debian/apparmor-profile.dhclient: allow the new pid file for dhclient which
-    NetworkManager will use. (LP: #869635)
-
- -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Thu, 16 Feb 2012 17:01:19 -0500
-
-isc-dhcp (4.1.1-P1-17ubuntu12) precise; urgency=low
-
-  * SECURITY UPDATE: denial of service via regular expressions
-    - debian/patches/CVE-2011-4539.dpatch: add check for null pointer in
-      common/tree.c.
-    - CVE-2011-4539
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 14 Dec 2011 15:49:11 -0500
-
-isc-dhcp (4.1.1-P1-17ubuntu11) precise; urgency=low
-
-  * debian/dhclient-script.linux: fix for read-only /etc (LP: #857524)
-
- -- Scott Moser <smoser@brickies.net>  Mon, 24 Oct 2011 22:28:35 -0400
-
-isc-dhcp (4.1.1-P1-17ubuntu10) oneiric; urgency=low
-
-  * make sure writing of /etc/resolv.conf actually waits until the file is 
-    writable (LP: #856984)
-
- -- Scott Moser <smoser@ubuntu.com>  Fri, 23 Sep 2011 11:26:29 -0400
-
-isc-dhcp (4.1.1-P1-17ubuntu9) oneiric; urgency=low
-
-  * debian/dhclient-script.linux.udeb: Leave previous nameservers in
-    resolv.conf if we don't get any in the current lease (matching the
-    non-udeb variant).
-
- -- Colin Watson <cjwatson@ubuntu.com>  Mon, 19 Sep 2011 21:40:33 +0100
-
-isc-dhcp (4.1.1-P1-17ubuntu8) oneiric; urgency=low
-
-  * debian/patches/dhclient-safer-timeout.dpatch: Increase default
-    timeout to ensure we don't hit it.  Closes LP: #838968.
-
- -- Steve Langasek <steve.langasek@ubuntu.com>  Fri, 02 Sep 2011 14:34:52 -0700
-
-isc-dhcp (4.1.1-P1-17ubuntu7) oneiric; urgency=low
-
-  * Add IPv6 support to udeb dhclient-script (forwarded as Debian #635897).
-
- -- Colin Watson <cjwatson@ubuntu.com>  Tue, 30 Aug 2011 14:44:23 +0100
-
-isc-dhcp (4.1.1-P1-17ubuntu6) oneiric; urgency=low
-
-  * SECURITY UPDATE: denial of service via specially crafted packets
-    - debian/patches/CVE-2011-2748-2749.dpatch: tighten up restriction in
-      common/discover.c, properly calculate length in common/options.c,
-      validate packet->options in server/dhcp.c.
-    - CVE-2011-2748
-    - CVE-2011-2749
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 11 Aug 2011 11:14:46 -0400
-
-isc-dhcp (4.1.1-P1-17ubuntu5) oneiric; urgency=low
-
-  * debian/isc-dhcp-{server,client}.apport: use new apport MAC function
-    instead of parsing and attaching AppArmor events here.
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 15 Jul 2011 08:21:11 -0400
-
-isc-dhcp (4.1.1-P1-17ubuntu4) oneiric; urgency=low
-
-  * adjust AppArmor profile for /var/run -> /run (LP: #810270)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Thu, 14 Jul 2011 08:26:44 -0500
-
-isc-dhcp (4.1.1-P1-17ubuntu3) oneiric; urgency=low
-
-  * Add DHCPv6 client configuration to dhclient.conf (LP: #770324)
-
- -- Stéphane Graber <stgraber@ubuntu.com>  Mon, 20 Jun 2011 09:41:26 -0400
-
-isc-dhcp (4.1.1-P1-17ubuntu2) oneiric; urgency=low
-
-  * debian/apparmor-profile.dhcpd: modify AppArmor profile for DHCP server to
-    work with IPv6 thanks to Launchpad user nikolas for the patch. LP: #787212
-
- -- Brian Murray <brian@ubuntu.com>  Fri, 03 Jun 2011 13:55:44 -0700
-
-isc-dhcp (4.1.1-P1-17ubuntu1) oneiric; urgency=low
-
-  * Merge from debian unstable.  Remaining changes:
-    - Deroot server (Debian #308832).
-    - Send hostname to DHCP server by default (LP #10239, Debian #151820).
-    - dhclient-onetry-call-clientscript.dpatch: Call 'dhclient-script FAIL'
-      when failing to get an address also when operating in oneshot mode
-      (-1).  This fixes avahi-autoipd invocation through dhcdbd.
-    - dhcpd.conf-subnet-examples.dpatch: Give an example for subnet-mask in
-      dhcpd.conf.
-    - dhclient-more-debug.dpatch: Show the requested/offered client IP in
-      log output, for better debugging.
-    - debian/dhclient-script.linux: Wait for /etc/resolv.conf to become
-      writable; this isn't the case when ifup is called from an Upstart job
-      triggered by udev (Ubuntu-specific until Debian uses this rule, too).
-      Rewritten for 4.1.1-P1-17 changes.
-    - revert-next-server.dpatch: Revert the need of the next-server option
-      in dhcpd.conf so it points to the own IP again for tftp if the option
-      is not set (patch by Oliver Grawert; disputed upstream).
-    - debian/isc-dhcp-server.init.d: Allow LTSP to override default
-      configuration in /etc/ltsp/dhcpd.conf.  Point that out in a header
-      comment in debian/dhcpd.conf (Ubuntu-specific).
-    - debian/isc-dhcp-server.config: Drop debconf question to medium
-      (Ubuntu-specific).
-    - Enable build hardening.  Add hardening-wrapper build dependency
-      (Ubuntu-specific).
-    - Add enforcing AppArmor profile for DHCP client and server.
-    - Install apport hooks.
-    - debian/dhclient-script.linux: Fix regression in host_name option
-      handling, so that it's always honored when /etc/hostname is not set.
-    - dhclient-fix-backoff.dpatch,
-      dhclient-initial-random-delay-option.dpatch: Speed up DHCP negotiation
-      (Debian #509089).
-    - Fix configure test for ber_init to work correctly with 'ld
-      --no-add-needed'.
-    - isc-dhcp-client Breaks: network-manager (<< 0.8.2~rc1), since earlier
-      versions were patched in Ubuntu to hardcode assumptions for
-      dhcp3-client.
-    - debian/patches/multi-ip-addr-per-if.dpatch: Resolve issue of
-      interfaces not being able to have more than one IP address assigned.
-    - debian/isc-dhcp-client.links: fix symlink ordering for new ISC
-      package
-    - debian/rules: add call to dh_link to get package symlinks back
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 30 May 2011 13:30:57 -0400
+  * debian/control: reformatted Uploaders so that dch doesn't think I'm making
+    NMUs
+  * debian/rules: do a clean between the LDAP-enabled build and the
+    non-LDAP-enabled one, so that no LDAP-related artefacts are accidently
+    incorporated into the non-LDAP build
+  * debian/dhclient-script.*: conditionalise the chown/chmod of the new
+    resolv.conf on the existence of the old one (closes: #595400)
+  * debian/dhclient-script.linux: comply with RFC 3442 and ignore
+    the routers option if the rfc3442-classless-static-routes option is present
+    (closes: #592735)
+  * debian/dhclient-script.kfreebsd: fix subnet mask handling (closes: #677985)
+
+ -- Andrew Pollock <apollock@debian.org>  Sat, 09 Jun 2012 14:01:05 -0700
+
+isc-dhcp (4.2.2.dfsg.1-5) unstable; urgency=medium
+
+  [ Andrew Pollock ]
+  * debian/dhclient.conf: send the hostname (closes: #151820) 
+
+  [ Michael Gilbert ]
+  * Fix cve-2011-4868: error in DDNS handling with IPv6 (closes: #655746)
+  * Fix cve-2011-4539: error in regular expression handling
+    (closes: #652259)
+  * Make dependencies diff-able
+  * Add myself to uploaders
+  * Remove all automatically generated files in clean rule
+  * Medium urgency for security updates
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 28 Apr 2012 16:00:49 -0400
+
+isc-dhcp (4.2.2.dfsg.1-4) unstable; urgency=low
+
+  * The "Zoe woke up at 4am and I couldn't get back to sleep so I had some
+    extra time to work on this" release
+  * patch the Makefile for the embedded BIND libraries so that autoconf is run
+    so that the modification to configure.in to fix the FTBFS on kFreeBSD
+    actually does something useful (closes: #643569)
+
+ -- Andrew Pollock <apollock@debian.org>  Wed, 14 Mar 2012 06:25:28 -0700
+
+isc-dhcp (4.2.2.dfsg.1-3) unstable; urgency=low
+
+  * debian/control: remove transitional packages
+  * debian/rules: apply the intent of Pierre Chifflier's patch to enable
+    hardening options (closes: #644413)
+  * debian/control: also add inetutils-ping to the dependencies for
+    isc-dhcp-client on hurd (closes: #648140)
+  * Convert to 3.0 (quilt) source format:
+    - debian/control: remove build-dep on dpatch
+    - debian/rules: stop including dpatch.make
+    - debian/rules: remove dpatch-related target dependencies
+    - convert patches from dpatch to pure quilt
+    - remove debian/README.source
+  * debian/rules: cleaned up the target names a bit to reflect the lack of
+    patching going on now
+  * repack bind.tar.gz in upstream source tarball to patch configure.in for
+    FTBFS on kFreeBSD and remove RFCs (closes: #643569, #645760)
+  * debian/watch: add dversionmangle to deal with dfsg upstream tarball
+  * Updated Dutch debconf template translation (closes: #651396)
+  * Added Polish debconf template translation (closes: #659372)
+  * Updated Brazilian Portugeuse debconf template translation (closes: #663494)
+  * debian/control: bumped Standards-Version (no changes)
+
+ -- Andrew Pollock <apollock@debian.org>  Tue, 13 Mar 2012 22:04:53 -0700
+
+isc-dhcp (4.2.2-2) unstable; urgency=low
+
+  * debian/rules: use dpkg-buildflags to set CFLAGS, and export CFLAGS (closes:
+    #643470)
+  * debian/dhclient.conf: revert hostname setting behaviour to something
+    equivalent to what upstream ships to avoid surprising people with unwanted
+    hostname changes when changing networks (closes: #648676)
+  * debian/dhclient-script.kfreebsd: apply patch from Robert Millan to resync
+    dhclient-script with FreeBSD version (closes: #645502)
+  * debian/control: add inetutils-ping to the dependencies for isc-dhcp-client
+    on kfreebsd (closes: #648140)
+  * Updated German debconf template translation (closes: #641843)
+  * added harding-wrapper to build dependencies and invoke it in debian/rules
+    (closes: #611192)
+
+ -- Andrew Pollock <apollock@debian.org>  Sat, 19 Nov 2011 21:37:24 -0800
+
+isc-dhcp (4.2.2-1) unstable; urgency=low
+
+  * New upstream release, includes security fixes for CVE-2011-2748 and
+    CVE-2011-2749 (closes: #638404)
+  * Remove obsolete patches, refit remaining patches
+  * Remove LDAP patch, it's finally upstream now (yay!)
+  * debian/rules: adjust double build for the non-existence of the LDAP patch
+  * debian/isc-dhcp-server-ldap.docs: update for new location of documentation
+  * debian/rules: added build-arch and build-indep targets
+  * debian/rules: applied patch from Kees Cook to call dh_link (closes: #614992)
+  * debian/dhclient-script.linux: applied patch from Colin Watson to make
+    dhclient-script support stateless DHCPv6 (closes: #632888) 
+  * debian/dhclient-script.linux: fix regression for MTU <= 576 handling
+    (closes: #638267)
+  * Apply patch from Peter Marschall to split the rfc3442-classless-routes hook
+    into a Linux and a kFreeBSD variant, so that the Linux one can use iproute
+    (closes: #630519)
+  * debian/isc-dhcp-server.postinst: apply patch from Peter Marschall to
+    document new variables in /etc/default/isc-dhcp-server
+  * debian/isc-dhcp-server.init.d: apply patch from Peter Marschall to
+    - make the name of the default file configurable
+    - make the name of the server configuration file configurable (closes:
+      #590158, #565650)
+    - allow passing additional options to dhcpd (closes: #613734)
+    - read PID from config file
+  * Add Catalan debconf template translation (closes: #628372)
+  * debian/isc-dhcp-client,dhcp3-client}.links: apply patch from Peter
+    Marschall to move old compatibility links to the old compatibility package
+    (closes: #614992)
+  * debian/isc-dhcp-server.postinst: apply patch from Peter Marschall to fix
+    comment in /etc/default/isc-dhcp-server (closes: #616417)
+  * debian/control: apply patch from Peter Marschall to add a Provides:
+    dhcp-client to isc-dhcp-client (closes: #236001)
+  * debian/dhclient-script.{linux,kfreebsd}: apply patch from Peter Marschall
+    to fix metric calculation (closes: #629632)
+  * debian/dhclient-script.linux: apply patches from Peter Marschall to support
+    IPv6 link-local resolvers
+  * debian/dhclient-script.{linux,kfreebsd}: applied patch from Peter Marschall
+    to factor out the hostname setting to a separate function
+  * debian/dhclient-script.{linux,kfreebsd}: applied patch from Peter Marschall
+    to harmonize the logic for setting the hostname (closes: #246155)
+  * apply patch from Peter Marschall to use one common script for the debug
+    hooks
+  * debian/rfc3442-classless-routes.{linux,kfreebsd}: applied patch from Peter
+    Marschall to take care of link-local routes (closes: #521024)
+  * debian/dhclient-script.*: apply patch from Peter Marschall to use alternate
+    value expansion
+  * debian/isc-dhcp-server.postinst: eliminate an error message from sed if no
+    interfaces are provided 
+
+ -- Andrew Pollock <apollock@debian.org>  Sun, 28 Aug 2011 22:12:21 -0700
+
+isc-dhcp (4.1.1-P1-18) unstable; urgency=low
+
+  * debian/control: fix short description for dhcp3-client package
+  * debian/rfc3442-classless-routes: convert to using iproute (closes: #630519)
+
+ -- Andrew Pollock <apollock@debian.org>  Sat, 18 Jun 2011 10:07:16 -0700
 
 isc-dhcp (4.1.1-P1-17) unstable; urgency=low
 
@@ -319,51 +338,6 @@ isc-dhcp (4.1.1-P1-17) unstable; urgency=low
 
  -- Andrew Pollock <apollock@debian.org>  Wed, 18 May 2011 23:02:44 -0700
 
-isc-dhcp (4.1.1-P1-16.1ubuntu1) oneiric; urgency=low
-
-  * Merge from debian unstable.  Remaining changes:
-    - Deroot server (Debian #308832).
-    - Send hostname to DHCP server by default (LP #10239, Debian #151820).
-    - dhclient-onetry-call-clientscript.dpatch: Call 'dhclient-script FAIL'
-      when failing to get an address also when operating in oneshot mode
-      (-1).  This fixes avahi-autoipd invocation through dhcdbd.
-    - dhcpd.conf-subnet-examples.dpatch: Give an example for subnet-mask in
-      dhcpd.conf.
-    - dhclient-more-debug.dpatch: Show the requested/offered client IP in
-      log output, for better debugging.
-    - debian/dhclient-script.linux: Wait for /etc/resolv.conf to become
-      writable; this isn't the case when ifup is called from an Upstart job
-      triggered by udev (Ubuntu-specific until Debian uses this rule, too).
-    - revert-next-server.dpatch: Revert the need of the next-server option
-      in dhcpd.conf so it points to the own IP again for tftp if the option
-      is not set (patch by Oliver Grawert; disputed upstream).
-    - debian/isc-dhcp-server.init.d: Allow LTSP to override default
-      configuration in /etc/ltsp/dhcpd.conf.  Point that out in a header
-      comment in debian/dhcpd.conf (Ubuntu-specific).
-    - debian/isc-dhcp-server.config: Drop debconf question to medium
-      (Ubuntu-specific).
-    - Enable build hardening.  Add hardening-wrapper build dependency
-      (Ubuntu-specific).
-    - Add enforcing AppArmor profile for DHCP client and server.
-    - Install apport hooks.
-    - debian/dhclient-script.linux: Fix regression in host_name option
-      handling, so that it's always honored when /etc/hostname is not set.
-    - dhclient-fix-backoff.dpatch,
-      dhclient-initial-random-delay-option.dpatch: Speed up DHCP negotiation
-      (Debian #509089).
-    - Fix configure test for ber_init to work correctly with 'ld
-      --no-add-needed'.
-    - isc-dhcp-client Breaks: network-manager (<< 0.8.2~rc1), since earlier
-      versions were patched in Ubuntu to hardcode assumptions for
-      dhcp3-client.
-    - debian/patches/multi-ip-addr-per-if.dpatch: Resolve issue of
-      interfaces not being able to have more than one IP address assigned.
-    - debian/isc-dhcp-client.links: fix symlink ordering for new ISC
-      package
-    - debian/rules: add call to dh_link to get package symlinks back
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 18 May 2011 09:49:05 -0400
-
 isc-dhcp (4.1.1-P1-16.1) unstable; urgency=high
 
   * Non-maintainer upload.
@@ -378,120 +352,6 @@ isc-dhcp (4.1.1-P1-16) unstable; urgency=high
   * Patch by Raphael Geissert from 4.1-ESV for CVE-2011-0413 (closes: #611217)
 
  -- Andrew Pollock <apollock@debian.org>  Thu, 03 Feb 2011 22:20:55 -0800
-
-isc-dhcp (4.1.1-P1-15ubuntu9) natty; urgency=low
-
-  * SECURITY UPDATE: arbitrary code execution via crafted hostname
-    - Patch for CVE-2011-0997 was getting reverted during the build
-      because of special quilt handling in debian/rules for the ldap
-      patches.
-    - debian/patches/00list: move CVE-2011-0997 patch before the ldap
-      patches, and add comment.
-    - CVE-2011-0997
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 19 Apr 2011 08:45:56 -0400
-
-isc-dhcp (4.1.1-P1-15ubuntu8) natty; urgency=low
-
-  * apparmor-profile.dhclient: update to also allow leases in /var/lib/dhcp3
-    (LP: #755724)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Mon, 11 Apr 2011 07:56:15 -0500
-
-isc-dhcp (4.1.1-P1-15ubuntu7) natty; urgency=low
-
-  * SECURITY UPDATE: arbitrary code execution via crafted hostname
-    - debian/patches/CVE-2011-0997.dpatch: filter strings in
-      client/dhclient.c, common/options.c.
-    - CVE-2011-0997
-
- -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 08 Apr 2011 14:43:35 -0400
-
-isc-dhcp (4.1.1-P1-15ubuntu6) natty; urgency=low
-
-  * debian/patches/multi-ip-addr-per-if.dpatch: Resolve issue of interfaces
-    not being able to have more than one IP address assigned. Patch courtesy
-    of Daniel Nurmi, Eucalyptus Systems. (LP: #717166)
-
- -- Dave Walker (Daviey) <DaveWalker@ubuntu.com>  Wed, 16 Mar 2011 07:55:33 +0000
-
-isc-dhcp (4.1.1-P1-15ubuntu5) natty; urgency=low
-
-  * debian/isc-dhcp-client.links: fix symlink ordering for new ISC package
-    (LP: #724556).
-
- -- Kees Cook <kees@ubuntu.com>  Thu, 24 Feb 2011 14:16:30 -0800
-
-isc-dhcp (4.1.1-P1-15ubuntu4) natty; urgency=low
-
-  * debian/rules: add call to dh_link to get package symlinks back
-    (Closes: #614992).
-
- -- Kees Cook <kees@ubuntu.com>  Thu, 24 Feb 2011 10:21:54 -0800
-
-isc-dhcp (4.1.1-P1-15ubuntu3) natty; urgency=low
-
-  * SECURITY UPDATE: denial of service via processing of message from an address
-    that was previously declined, causing assert failure. (LP: #720729)
-    - debian/patches/CVE-2011-0413.dpatch: Reclaim the previously abandoned 
-      address in isc-dhcp/server/mdb6.c, by retagging the lease and adding
-      a sane expiration value.  Based on changes between upstream releases 
-      4.1.2 and 4.1.2-P1
-    - CVE-2011-0413
-
- -- Dave Walker (Daviey) <DaveWalker@ubuntu.com>  Thu, 17 Feb 2011 16:24:57 +0000
-
-isc-dhcp (4.1.1-P1-15ubuntu2) natty; urgency=low
-
-  * debian/apparmor-profile.dhcpd: allow read access to @{PROC}/[0-9]*/net/dev
-    LP: #688186
-  * debian/apparmor-profile.dhclient: tighten to allow access to
-    @{PROC}/[0-9]*/net/**, not @{PROC}/sys/net
-  * debian/isc-dhcp-client.postinst: move the old dhclient3 AppArmor aside on
-    upgrade. This is needed to properly support upgrades to 11.04 and 12.04.
-    LP: #688191
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Thu, 09 Dec 2010 11:21:53 -0600
-
-isc-dhcp (4.1.1-P1-15ubuntu1) natty; urgency=low
-
-  * Resynchronise with Debian.  Remaining changes:
-    - Deroot server (Debian #308832).
-    - Send hostname to DHCP server by default (LP #10239, Debian #151820).
-    - dhclient-onetry-call-clientscript.dpatch: Call 'dhclient-script FAIL'
-      when failing to get an address also when operating in oneshot mode
-      (-1).  This fixes avahi-autoipd invocation through dhcdbd.
-    - dhcpd.conf-subnet-examples.dpatch: Give an example for subnet-mask in
-      dhcpd.conf.
-    - dhclient-more-debug.dpatch: Show the requested/offered client IP in
-      log output, for better debugging.
-    - debian/dhclient-script.linux: Wait for /etc/resolv.conf to become
-      writable; this isn't the case when ifup is called from an Upstart job
-      triggered by udev (Ubuntu-specific until Debian uses this rule, too).
-    - revert-next-server.dpatch: Revert the need of the next-server option
-      in dhcpd.conf so it points to the own IP again for tftp if the option
-      is not set (patch by Oliver Grawert; disputed upstream).
-    - debian/isc-dhcp-server.init.d: Allow LTSP to override default
-      configuration in /etc/ltsp/dhcpd.conf.  Point that out in a header
-      comment in debian/dhcpd.conf (Ubuntu-specific).
-    - debian/isc-dhcp-server.config: Drop debconf question to medium
-      (Ubuntu-specific).
-    - Enable build hardening.  Add hardening-wrapper build dependency
-      (Ubuntu-specific).
-    - Add enforcing AppArmor profile for DHCP client and server.
-    - Install apport hooks.
-    - debian/dhclient-script.linux: Fix regression in host_name option
-      handling, so that it's always honored when /etc/hostname is not set.
-    - dhclient-fix-backoff.dpatch,
-      dhclient-initial-random-delay-option.dpatch: Speed up DHCP negotiation
-      (Debian #509089).
-    - Fix configure test for ber_init to work correctly with 'ld
-      --no-add-needed'.
-    - isc-dhcp-client Breaks: network-manager (<< 0.8.2~rc1), since earlier
-      versions were patched in Ubuntu to hardcode assumptions for
-      dhcp3-client.
-
- -- Colin Watson <cjwatson@ubuntu.com>  Mon, 06 Dec 2010 14:29:49 +0000
 
 isc-dhcp (4.1.1-P1-15) unstable; urgency=low
 
@@ -520,54 +380,6 @@ isc-dhcp (4.1.1-P1-12) unstable; urgency=low
     dhclient-script(8) to mention the exit hook functionality (closes: #469203)
 
  -- Andrew Pollock <apollock@debian.org>  Tue, 02 Nov 2010 23:27:59 -0700
-
-isc-dhcp (4.1.1-P1-11ubuntu1) natty; urgency=low
-
-  * Resynchronise with Debian.  Remaining changes:
-    - Deroot server (Debian #308832).
-    - Send hostname to DHCP server by default (LP #10239, Debian #151820).
-    - dhclient-onetry-call-clientscript.dpatch: Call 'dhclient-script FAIL'
-      when failing to get an address also when operating in oneshot mode
-      (-1).  This fixes avahi-autoipd invocation through dhcdbd.
-    - dhcpd.conf-subnet-examples.dpatch: Give an example for subnet-mask in
-      dhcpd.conf.
-    - dhclient-more-debug.dpatch: Show the requested/offered client IP in
-      log output, for better debugging.
-    - debian/dhclient-script.linux: Wait for /etc/resolv.conf to become
-      writable; this isn't the case when ifup is called from an Upstart job
-      triggered by udev (Ubuntu-specific until Debian uses this rule, too).
-    - revert-next-server.dpatch: Revert the need of the next-server option
-      in dhcpd.conf so it points to the own IP again for tftp if the option
-      is not set (patch by Oliver Grawert; disputed upstream).
-    - debian/isc-dhcp-server.init.d: Allow LTSP to override default
-      configuration in /etc/ltsp/dhcpd.conf.  Point that out in a header
-      comment in debian/dhcpd.conf (Ubuntu-specific).
-    - debian/isc-dhcp-server.config: Drop debconf question to medium
-      (Ubuntu-specific).
-    - Enable build hardening.  Add hardening-wrapper build dependency
-      (Ubuntu-specific).
-    - Add enforcing AppArmor profile for DHCP client and server.
-    - Install apport hooks.
-    - debian/dhclient-script.linux: Fix regression in host_name option
-      handling, so that it's always honored when /etc/hostname is not set.
-    - dhclient-fix-backoff.dpatch,
-      dhclient-initial-random-delay-option.dpatch: Speed up DHCP negotiation
-      (Debian #509089).
-    - fix_exit_hook_doc_manpage.diff: Modify client/dhclient-script(8) to
-      include information about the script directories
-      /etc/dhcp/dhclient-enter-hooks.d and /etc/dhcp/dhclient-enter-hooks.d.
-  * Drop preinst code to set AppArmor to complain mode on upgrades from very
-    old Ubuntu releases, predating the last LTS.
-  * Fix syntax errors in isc-dhcp-server apport hook.
-  * Use dh_apport.
-  * Make isc-dhcp-server depend on adduser for its postinst.
-  * Fix configure test for ber_init to work correctly with 'ld
-    --no-add-needed'.
-  * isc-dhcp-client Breaks: network-manager (<< 0.8.2~rc1), since earlier
-    versions were patched in Ubuntu to hardcode assumptions for
-    dhcp3-client.
-
- -- Colin Watson <cjwatson@ubuntu.com>  Tue, 09 Nov 2010 17:40:49 +0000
 
 isc-dhcp (4.1.1-P1-11) unstable; urgency=low
 
@@ -751,315 +563,6 @@ isc-dhcp (4.1.0-1) experimental; urgency=low
 
  -- Andrew Pollock <apollock@debian.org>  Wed, 02 Sep 2009 22:34:25 -0700
 
-dhcp3 (3.1.3-2ubuntu6) maverick; urgency=low
-
-  * update to use dh_apparmor:
-    - debian/rules, debian/{dhcp3-client,dhcp3-server}-post{inst,rm}: updated
-      to use dh_apparmor
-    - debian/control: Build-Depends on debhelper >= 7.4.20ubuntu6
-  * debian/apparmor-profile*: use local include
-  * debian/dhcp3-client.*: remove old check for if-pre-up.d's
-    dhclient3-apparmor on upgrade, as well as the no longer used conffile
-    functions
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Fri, 06 Aug 2010 15:34:54 -0500
-
-dhcp3 (3.1.3-2ubuntu5) maverick; urgency=low
-
-  * debian/patches/fix_exit_hook_doc_manpage.diff: fix LP: #53024,
-    Modified client/dhclient-script.8 manpage to include information about
-    the script folders /etc/dhcp3/dhclient-enter-hooks.d and
-    /etc/dhcp3/dhclient-enter-hooks.d.
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Jul 2010 15:55:09 -0400
-
-dhcp3 (3.1.3-2ubuntu4) maverick; urgency=low
-
-  * Speed up DHCP negotiation:
-    - Add dhclient-fix-backoff.dpatch: Fix the delays between consecutive
-      requests (the backoff algorithm).
-    - Add dhclient-initial-random-delay-option.dpatch: Provide an option for
-      the intial random delay instead of hardcoding it, and set it to 0 by
-      default.
-    - Thanks to Michel Lespinasse <walken@zoy.org> for the patches! See patch
-      headers and Debian #509089 for details.
-
- -- Martin Pitt <martin.pitt@ubuntu.com>  Fri, 25 Jun 2010 11:44:00 +0200
-
-dhcp3 (3.1.3-2ubuntu3) lucid; urgency=low
-
-  * debian/dhclient-script.linux: Fix regression in host_name option
-    handling, so that it's always honored when /etc/hostname is not set,
-    fixes LP: #537978, #482313, #90388, #476491
-
- -- Thierry Carrez <thierry.carrez@ubuntu.com>  Thu, 01 Apr 2010 16:52:36 +0200
-
-dhcp3 (3.1.3-2ubuntu2) lucid; urgency=low
-
-  * Fix missing fi in debian/dhclient-script.linux (LP: #519206).
-
- -- Evan Dandrea <evand@ubuntu.com>  Tue, 09 Feb 2010 10:41:24 +0000
-
-dhcp3 (3.1.3-2ubuntu1) lucid; urgency=low
-
-  * Merge from debian testing.  Remaining changes:
-    - Deroot server (Debian #308832):
-      + droppriv.dpatch, deroot-server.dpatch: Code changes.
-      + debian/control: Add libcap-dev build dependency.
-      + debian/dhcp3-server.postinst: Create dhcpd system user.
-      + debian/dhcp3-server.init.d: Create paths with appropriate permissions
-        for dhcpd system user access.
-     - Send hostname to DHCP server by default (LP #10239, Debian #151820):
-       + debian/patches/dynamic-hostname.dpatch: Add support for a new string
-         type 'h' which behaves like 't' except that '<hostname>' is changed to
-         the current hostname. Change 'host-name' DHCP option type from 't' to
-         'h'.
-       + debian/dhclient.conf: Enable send-hostname by default.
-      - dhclient-onetry-call-clientscript.dpatch: Call 'dhclient-script FAIL'
-        when failing to get an address also when operating in oneshot mode (-1).
-        This fixes avahi-autoipd invocation through dhcdbd. (Debian #486520)
-      - debian/patches/dhcpd.conf-subnet-examples.dpatch: Give an example for
-        subnet-mask in dhcpd.conf. (LP #26661)
-      - dhclient-more-debug.dpatch: Show the requested/offered client IP in log
-        output, for better debugging. (LP #35265, Debian #486611)
-      - debian/dhclient-script.linux: Wait for /etc/resolv.conf to become
-        writable; this isn't the case when udev's 85-ifupdown.rules calls ifup
-        early. (Ubuntu specific until Debian uses this rule, too)
-      - revert-next-server.dpatch: Revert the need of the next-server option in
-        dhcpd.conf so it points to the own IP again for tftp if the option is
-        not set. (Patch by Oliver Grawert; disputed upstream)
-      - debian/dhcp3-server.init.d: Allow LTSP to override default configuration
-        in /etc/ltsp/dhcpd.conf. Point that out in a header comment in
-        debian/dhcpd.conf. (Ubuntu specific)
-      - debian/dhcp3-server.config: Drop debconf question to medium. (Ubuntu
-        specific)
-      - debian/rules: Enable build hardening. Add hardening-wrapper build
-        dependency. (Ubuntu specific)
-      - debian/dhclient-script.linux: Drop keeping of old search/domain values
-        if we didn't get any from the DHCP response. It is inconsistent with
-        resolvconf and should rather use default/supercede options in
-        /etc/dhcp3/dhclient.conf.
-      - add enforcing Apparmor profile for dhcp3 client and server:
-        + debian/control: Suggests apparmor
-        + debian/dhcp3-{client,server}.dirs: add etc/apparmor.d/force-complain
-        + debian/dhcp3-{client,server}.preinst: force-complain on upgrades from
-          dhcp3-server earlier than Ubuntu 7.04
-        + debian/dhcp3-{client,server}.postinst: reload apparmor
-        + debian/dhcp3-{client,server}.postrm: remove force-complain link
-        + debian/rules: copy profile into DESTDIR
-        + debian/dhcp3-server.files: install usr.sbin.dhcpd3
-        + debian/dhcp3-client.files: install sbin.dhclient3
-        + debian/README.Debian: add note on Apparmor
-        + Adjust dhclient AppArmor profile to call dhclient-script with Uxr instead
-          of Pxr with its own unrestricted profile. This simplifies the profile,
-        + debian/dhcp3-client.postinst: adjust to reload only the dhlient3 profile.
-        + debian/dhcp3-server.postinst: adjust to reload only the dhcpd3 profile.
-       - add ifupdown hook so the dhclient3 Apparmor profile is loaded before
-         calling dhclient3, which can happen under certain conditions with udev
-         + debian/dhcp3-client.files: install dhclient3-apparmor ifup script
-         + debian/dhcp3-client.dirs: add etc/network/if-pre-up.d
-         + debian/rules: copy ifup script into DESTDIR
-       - simplify ifupdown logic since we will mount securityfs in mountkern.sh
-         instead of trying to wait around for it here. Thanks to Scott James
-         Remnant for analysis (LP: #399954)
-
-   [Chuck Short]
-   * debian/rules, debian/apport/dhcp3-server.py, debian/apport/dhcp3-client.py,
-     debian/dhcp3-client.files, debian/dhcp3-server.files, debian/dhcp3-common.dirs:
-     Install apport hook, apart of the server-lucid-apport-hooks specification.
-
- -- Chuck Short <zulcss@ubuntu.com>  Wed, 27 Jan 2010 08:04:48 +0000
-
-dhcp3 (3.1.3-1ubuntu3) lucid; urgency=low
-
-  * drop patch for CVE-2009-0692 as this was fixed in 3.1.3
-    - http://oldwww.isc.org/sw/dhcp/dhcp_rel2.php?noframes=1
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Tue, 26 Jan 2010 21:28:23 -0600
-
-dhcp3 (3.1.3-1ubuntu2) lucid; urgency=low
-
-  * debian/dhcp3-client.links: install symlink for early loading of
-    dhclient AppArmor profile.
-
- -- Kees Cook <kees@ubuntu.com>  Tue, 15 Dec 2009 11:31:21 -0800
-
-dhcp3 (3.1.3-1ubuntu1) lucid; urgency=low
-
-  * Merge from debian testing.  Remaining changes:
-    - Deroot server (Debian #308832)
-      + droppriv.dpatch, deroot-server.dpatch: Code changes.
-      + debian/control: Add libcap-dev build dependency.
-      + debian/dhcp3-server.postinst: Create dhcpd system user.
-      + debian/dhcp3-server.init.d: Create paths with appropriate permissions
-        for dhcpd system user access.
-    - Send hostname to DHCP server by default (LP #10239, Debian #151820):
-      + debian/patches/dynamic-hostname.dpatch: Add support for a new string
-        type 'h' which behaves like 't' except that '<hostname>' is changed to
-        the current hostname. Change 'host-name' DHCP option type from 't' to
-        'h'
-      + debian/dhclient.conf: Enable send-hostname by default.
-    - dhclient-onetry-call-clientscript.dpatch: Call 'dhclient-script FAIL'
-      when failing to get an address also when operating in oneshot mode (-1).
-      This fixes avahi-autoipd invocation through dhcdbd. (Debian #486520)
-    - debian/patches/dhcpd.conf-subnet-examples.dpatch: Give an example for
-      subnet-mask in dhcpd.conf. (LP #26661)
-    - dhclient-more-debug.dpatch: Show the requested/offered client IP in log
-      output, for better debugging. (LP #35265, Debian #486611)
-    - debian/dhclient-script.linux: Wait for /etc/resolv.conf to become
-      writable; this isn't the case when udev's 85-ifupdown.rules calls ifup
-      early. (Ubuntu specific until Debian uses this rule, too)
-    - revert-next-server.dpatch: Revert the need of the next-server option in
-      dhcpd.conf so it points to the own IP again for tftp if the option is
-      not set. (Patch by Oliver Grawert; disputed upstream)
-    - debian/dhcp3-server.init.d: Allow LTSP to override default configuration
-      in /etc/ltsp/dhcpd.conf. Point that out in a header comment in
-      debian/dhcpd.conf. (Ubuntu specific)
-    - debian/dhcp3-server.config: Drop debconf question to medium. (Ubuntu
-      specific)
-    - debian/rules: Enable build hardening. Add hardening-wrapper build
-      dependency. (Ubuntu specific)
-    - debian/dhclient-script.linux: Drop keeping of old search/domain values
-      if we didn't get any from the DHCP response. It is inconsistent with
-      resolvconf and should rather use default/supercede options in
-      /etc/dhcp3/dhclient.conf.
-    - add enforcing Apparmor profile for dhcp3 client and server:
-      - debian/control: Suggests apparmor
-      - debian/dhcp3-{client,server}.dirs: add etc/apparmor.d/force-complain
-      - debian/dhcp3-{client,server}.preinst: force-complain on upgrades from
-        dhcp3-server earlier than Ubuntu 7.04
-      - debian/dhcp3-{client,server}.postinst: reload apparmor
-      - debian/dhcp3-{client,server}.postrm: remove force-complain link
-      - debian/rules: copy profile into DESTDIR
-      - debian/dhcp3-server.files: install usr.sbin.dhcpd3
-      - debian/dhcp3-client.files: install sbin.dhclient3
-      - debian/README.Debian: add note on Apparmor
-      - Adjust dhclient AppArmor profile to call dhclient-script with Uxr instead
-        of Pxr with its own unrestricted profile. This simplifies the profile,
-      - debian/dhcp3-client.postinst: adjust to reload only the dhlient3 profile.
-      - debian/dhcp3-server.postinst: adjust to reload only the dhcpd3 profile.
-     - add ifupdown hook so the dhclient3 Apparmor profile is loaded before
-       calling dhclient3, which can happen under certain conditions with udev
-       - debian/dhcp3-client.files: install dhclient3-apparmor ifup script
-       - debian/dhcp3-client.dirs: add etc/network/if-pre-up.d
-       - debian/rules: copy ifup script into DESTDIR
-     - simplify ifupdown logic since we will mount securityfs in mountkern.sh
-       instead of trying to wait around for it here. Thanks to Scott James
-       Remnant for analysis (LP: #399954)
-
- -- Chuck Short <zulcss@ubuntu.com>  Mon, 23 Nov 2009 18:15:20 +0000
-
-dhcp3 (3.1.2-1ubuntu7) karmic; urgency=low
-
-  * Remove if-pre-up workaround for AppArmor now that it is started
-    from the initramfs.  This solves unexpected behavior when apparmor
-    is temporarily disabled on a system using DHCP.
-
- -- Kees Cook <kees@ubuntu.com>  Wed, 07 Oct 2009 16:27:10 -0700
-
-dhcp3 (3.1.2-1ubuntu6) karmic; urgency=low
-
-  * debian/apparmor-profile.dhclient3: allow access to lease files and
-    script for synce-hal to work. (LP: #445442)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Wed, 07 Oct 2009 09:04:07 -0500
-
-dhcp3 (3.1.2-1ubuntu5) karmic; urgency=low
-
-  * debian/apparmor-dhclient3.ifupdown: use profile name instead of stdin.
-
- -- Kees Cook <kees@ubuntu.com>  Fri, 17 Jul 2009 12:07:19 -0700
-
-dhcp3 (3.1.2-1ubuntu4) karmic; urgency=low
-
-  * Adjust dhclient AppArmor profile to call dhclient-script with Uxr instead
-    of Pxr with its own unrestricted profile. This simplifies the profile,
-    does not change the security stance of the profile, and works around an
-    AppArmor regression in Ubuntu kernel 2.6.31-3.19. (LP: #400349)
-  * debian/dhcp3-client.postinst: adjust to reload only the dhlient3 profile,
-    not all of AppArmor
-  * debian/dhcp3-server.postinst: adjust to reload only the dhcpd3 profile,
-    not all of AppArmor
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Fri, 17 Jul 2009 09:57:19 -0500
-
-dhcp3 (3.1.2-1ubuntu3) karmic; urgency=low
-
-  * simplify ifupdown logic since we will mount securityfs in mountkern.sh
-    instead of trying to wait around for it here. Thanks to Scott James
-    Remnant for analysis (LP: #399954)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Thu, 16 Jul 2009 11:25:40 -0500
-
-dhcp3 (3.1.2-1ubuntu2) karmic; urgency=low
-
-  * SECURITY UPDATE: stack overflow when connecting to malicious DHCP v4
-    server
-    - debian/patches/CVE-2009-0692.dpatch: update script_write_params() in
-      dhclient.c to verify that length of data is not longer than netmask
-      (iaddr)
-    - CVE-2009-0692
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Mon, 13 Jul 2009 15:01:19 -0500
-
-dhcp3 (3.1.2-1ubuntu1) karmic; urgency=low
-
-  * Merge from Debian unstable. Remaining Ubuntu changes:
-    - Deroot server (Debian #308832)
-      + droppriv.dpatch, deroot-server.dpatch: Code changes.
-      + debian/control: Add libcap-dev build dependency.
-      + debian/dhcp3-server.postinst: Create dhcpd system user.
-      + debian/dhcp3-server.init.d: Create paths with appropriate permissions
-        for dhcpd system user access.
-    - Send hostname to DHCP server by default (LP #10239, Debian #151820):
-      + debian/patches/dynamic-hostname.dpatch: Add support for a new string
-        type 'h' which behaves like 't' except that '<hostname>' is changed to
-        the current hostname. Change 'host-name' DHCP option type from 't' to
-        'h'.
-      + debian/dhclient.conf: Enable send-hostname by default.
-    - dhclient-onetry-call-clientscript.dpatch: Call 'dhclient-script FAIL'
-      when failing to get an address also when operating in oneshot mode (-1).
-      This fixes avahi-autoipd invocation through dhcdbd. (Debian #486520)
-    - debian/patches/dhcpd.conf-subnet-examples.dpatch: Give an example for
-      subnet-mask in dhcpd.conf. (LP #26661)
-    - dhclient-more-debug.dpatch: Show the requested/offered client IP in log
-      output, for better debugging. (LP #35265, Debian #486611)
-    - debian/dhclient-script.linux: Wait for /etc/resolv.conf to become
-      writable; this isn't the case when udev's 85-ifupdown.rules calls ifup
-      early. (Ubuntu specific until Debian uses this rule, too)
-    - revert-next-server.dpatch: Revert the need of the next-server option in
-      dhcpd.conf so it points to the own IP again for tftp if the option is
-      not set. (Patch by Oliver Grawert; disputed upstream)
-    - debian/dhcp3-server.init.d: Allow LTSP to override default configuration
-      in /etc/ltsp/dhcpd.conf. Point that out in a header comment in
-      debian/dhcpd.conf. (Ubuntu specific)
-    - debian/dhcp3-server.config: Drop debconf question to medium. (Ubuntu
-      specific)
-    - debian/rules: Enable build hardening. Add hardening-wrapper build
-      dependency. (Ubuntu specific)
-    - debian/dhclient-script.linux: Drop keeping of old search/domain values
-      if we didn't get any from the DHCP response. It is inconsistent with
-      resolvconf and should rather use default/supercede options in
-      /etc/dhcp3/dhclient.conf.
-    - add enforcing Apparmor profile for dhcp3 client and server:
-      - debian/control: Suggests apparmor
-      - debian/dhcp3-{client,server}.dirs: add etc/apparmor.d/force-complain
-      - debian/dhcp3-{client,server}.preinst: force-complain on upgrades from
-        dhcp3-server earlier than Ubuntu 7.04
-      - debian/dhcp3-{client,server}.postinst: reload apparmor
-      - debian/dhcp3-{client,server}.postrm: remove force-complain link
-      - debian/rules: copy profile into DESTDIR
-      - debian/dhcp3-server.files: install usr.sbin.dhcpd3
-      - debian/dhcp3-client.files: install sbin.dhclient3
-      - debian/README.Debian: add note on Apparmor
-    - add ifupdown hook so the dhclient3 Apparmor profile is loaded before
-      calling dhclient3, which can happen under certain conditions with udev
-      - debian/dhcp3-client.files: install dhclient3-apparmor ifup script
-      - debian/dhcp3-client.dirs: add etc/network/if-pre-up.d
-      - debian/rules: copy ifup script into DESTDIR
-
- -- Steve Langasek <steve.langasek@ubuntu.com>  Fri, 08 May 2009 22:52:58 +0000
-
 dhcp3 (3.1.2-1) unstable; urgency=low
 
   * New upstream release
@@ -1093,121 +596,6 @@ dhcp3 (3.1.1-6) unstable; urgency=low
     debian/dhcp3-server.docs
 
  -- Andrew Pollock <apollock@debian.org>  Sun, 01 Feb 2009 18:51:06 -0800
-
-dhcp3 (3.1.1-5ubuntu8) jaunty; urgency=low
-
-  * debian/dhclient.conf: Request ntp-servers by default (LP: #74164)
-
- -- Jonathan Marsden <jmarsden@fastmail.fm>  Mon, 23 Mar 2009 19:42:32 -0700
-
-dhcp3 (3.1.1-5ubuntu7) jaunty; urgency=low
-
-  * debian/apparmor-profile.dhclient3: adjust to allow NetworkManager and
-    connmann access to dbus (LP: #342235)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Tue, 17 Mar 2009 17:26:19 -0500
-
-dhcp3 (3.1.1-5ubuntu6) jaunty; urgency=low
-
-  * debian/apparmor-profile.dhclient3: adjust to support connman. Patch
-    thanks to Mark Shuttleworth. (LP: #333711)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Tue, 24 Feb 2009 08:47:29 -0600
-
-dhcp3 (3.1.1-5ubuntu5) jaunty; urgency=low
-
-  * don't wait in ifupdown script if apparmor isn't installed (LP: #331444)
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Thu, 19 Feb 2009 07:44:45 -0600
-
-dhcp3 (3.1.1-5ubuntu4) jaunty; urgency=low
-
-  * add enforcing Apparmor profile for dhcp3-client:
-    - debian/control: Suggests apparmor
-    - debian/dhcp3-client.dirs: add etc/apparmor.d/force-complain
-    - debian/dhcp3-client.preinst: force-complain on upgrades from dhcp3-client
-      earlier than Ubuntu 7.04
-    - debian/dhcp3-client.postinst: reload apparmor
-    - debian/dhcp3-client.postrm: remove force-complain link
-    - debian/rules: copy profile into DESTDIR
-    - debian/dhcp3-client.files: install sbin.dhclient3
-    - debian/README.Debian: expand note on Apparmor
-  * add ifupdown hook so the dhclient3 Apparmor profile is loaded before
-    calling dhclient3, which can happen under certain conditions with udev
-    - debian/dhcp3-client.files: install dhclient3-apparmor ifup script
-    - debian/dhcp3-client.dirs: add etc/network/if-pre-up.d
-    - debian/rules: copy ifup script into DESTDIR
-  * rename debian/apparmor-profile to debian/apparmor-profile.dhcpd3
-  * debian/apparmor-profile.dhcpd3: allow eucalyptus paths
-  * References
-    - https://wiki.ubuntu.com/ApparmorProfileMigration
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Wed, 18 Feb 2009 08:23:14 -0600
-
-dhcp3 (3.1.1-5ubuntu3) jaunty; urgency=low
-
-  * add enforcing Apparmor profile:
-    - debian/control: Suggests apparmor
-    - debian/dhcp3-server.dirs: add etc/apparmor.d/force-complain
-    - debian/dhcp3-server.preinst: force-complain on upgrades from dhcp3-server
-      earlier than Ubuntu 7.04
-    - debian/dhcp3-server.postinst: reload apparmor
-    - debian/dhcp3-server.postrm: remove force-complain link
-    - debian/rules: copy profile into DESTDIR
-    - debian/dhcp3-server.files: install usr.sbin.dhcpd3
-    - debian/README.Debian: add note on Apparmor
-  * References
-    - https://wiki.ubuntu.com/ApparmorProfileMigration
-
- -- Jamie Strandboge <jamie@ubuntu.com>  Tue, 10 Feb 2009 15:08:42 -0600
-
-dhcp3 (3.1.1-5ubuntu2) jaunty; urgency=low
-
-  * Raise minimum valid MTU to 577 to avoid broken devices that send 576,
-    which is unlikely to be correct either (LP: #274069, debian bug #513616).
-
- -- Kees Cook <kees@ubuntu.com>  Fri, 30 Jan 2009 11:13:15 -0800
-
-dhcp3 (3.1.1-5ubuntu1) jaunty; urgency=low
-
-  * Merge from Debian unstable. Remaining Ubuntu changes:
-    - Deroot server (Debian #308832)
-      + droppriv.dpatch, deroot-server.dpatch: Code changes.
-      + debian/control: Add libcap-dev build dependency.
-      + debian/dhcp3-server.postinst: Create dhcpd system user.
-      + debian/dhcp3-server.init.d: Create paths with appropriate permissions
-        for dhcpd system user access.
-    - Send hostname to DHCP server by default (LP #10239, Debian #151820):
-      + debian/patches/dynamic-hostname.dpatch: Add support for a new string
-        type 'h' which behaves like 't' except that '<hostname>' is changed to
-        the current hostname. Change 'host-name' DHCP option type from 't' to 'h'.
-      + debian/dhclient.conf: Enable send-hostname by default.
-    - dhclient-onetry-call-clientscript.dpatch: Call 'dhclient-script FAIL'
-      when failing to get an address also when operating in oneshot mode (-1).
-      This fixes avahi-autoipd invocation through dhcdbd. (Debian #486520)
-    - debian/patches/dhcpd.conf-subnet-examples.dpatch: Give an example for
-      subnet-mask in dhcpd.conf. (LP #26661)
-    - dhclient-more-debug.dpatch: Show the requested/offered client IP in log
-      output, for better debugging. (LP #35265, Debian #486611)
-    - debian/dhclient-script.linux: Wait for /etc/resolv.conf to become
-      writable; this isn't the case when udev's 85-ifupdown.rules calls ifup
-      early. (Ubuntu specific until Debian uses this rule, too)
-    - revert-next-server.dpatch: Revert the need of the next-server option in
-      dhcpd.conf so it points to the own IP again for tftp if the option is not
-      set. (Patch by Oliver Grawert; disputed upstream)
-    - debian/dhcp3-server.init.d: Allow LTSP to override default configuration
-      in /etc/ltsp/dhcpd.conf. Point that out in a header comment in
-      debian/dhcpd.conf. (Ubuntu specific)
-    - debian/dhcp3-server.config: Drop debconf question to medium. (Ubuntu
-      specific)
-    - debian/rules: Enable build hardening. Add hardening-wrapper build
-      dependency. (Ubuntu specific)
-  * debian/dhclient-script.linux: Drop keeping of old search/domain values if
-    we didn't get any from the DHCP response. It is inconsistent with
-    resolvconf and should rather use default/supercede options in
-    /etc/dhcp3/dhclient.conf. (see Debian #486535) 
-
- -- Martin Pitt <martin.pitt@ubuntu.com>  Tue, 11 Nov 2008 13:38:53 +0100
 
 dhcp3 (3.1.1-5) unstable; urgency=high
 
@@ -2805,7 +2193,7 @@ dhcpd (0.5.7-1) unstable; urgency=high
  -- Christoph Lameter <clameter@waterf.org>  Wed, 4 Sep 1996 14:51:46 +0800
 
 Old Changelog:
+
 dhcpd (0.5.5-1) experimental; urgency=low
 
   * Initial Release
-

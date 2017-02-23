@@ -3,7 +3,7 @@
    Private master include file for the OMAPI library. */
 
 /*
- * Copyright (c) 2009-2010 by Internet Systems Consortium, Inc. ("ISC") 
+ * Copyright (c) 2009-2010,2014 by Internet Systems Consortium, Inc. ("ISC") 
  * Copyright (c) 2004,2007 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1996-2003 by Internet Software Consortium
  *
@@ -25,12 +25,6 @@
  *   <info@isc.org>
  *   https://www.isc.org/
  *
- * This software has been written for Internet Systems Consortium
- * by Ted Lemon in cooperation with Vixie Enterprises and Nominum, Inc.
- * To learn more about Internet Systems Consortium, see
- * ``https://www.isc.org/''.  To learn more about Vixie Enterprises,
- * see ``http://www.vix.com''.   To learn more about Nominum, Inc., see
- * ``http://www.nominum.com''.
  */
 
 #ifndef __OMAPIP_OMAPIP_P_H__
@@ -64,13 +58,20 @@
 #include "osdep.h"
  */
 
-#include <isc-dhcp/dst.h>
-#include <isc-dhcp/result.h>
+#include <dst/dst.h>
+#include "result.h"
 
 #include <omapip/convert.h>
 #include <omapip/hash.h>
 #include <omapip/omapip.h>
 #include <omapip/trace.h>
+
+/* DST_API control flags */
+/* These are used in functions dst_sign_data and dst_verify_data */
+#define SIG_MODE_INIT		1  /* initalize digest */
+#define SIG_MODE_UPDATE		2  /* add data to digest */
+#define SIG_MODE_FINAL		4  /* generate/verify signature */
+#define SIG_MODE_ALL		(SIG_MODE_INIT|SIG_MODE_UPDATE|SIG_MODE_FINAL)
 
 /* OMAPI protocol header, version 1.00 */
 typedef struct {
@@ -191,10 +192,10 @@ typedef struct __omapi_connection_object {
 	omapi_buffer_t *outbufs;
 	omapi_listener_object_t *listener;	/* Listener that accepted this
 						   connection, if any. */
-	DST_KEY *in_key;	/* Authenticator signing incoming
+	dst_key_t *in_key;	/* Authenticator signing incoming
 				   data. */
 	void *in_context;	/* Input hash context. */
-	DST_KEY *out_key;	/* Authenticator signing outgoing
+	dst_key_t *out_key;	/* Authenticator signing outgoing
 				   data. */
 	void *out_context;	/* Output hash context. */
 } omapi_connection_object_t;
@@ -207,6 +208,8 @@ typedef struct __omapi_io_object {
 	isc_result_t (*reader) (omapi_object_t *);
 	isc_result_t (*writer) (omapi_object_t *);
 	isc_result_t (*reaper) (omapi_object_t *);
+	isc_socket_t *fd;
+	isc_boolean_t closed; /* ISC_TRUE = closed, do not use */
 } omapi_io_object_t;
 
 typedef struct __omapi_generic_object {
@@ -256,7 +259,7 @@ OMAPI_OBJECT_ALLOC_DECL (omapi_message,
 			 omapi_message_object_t, omapi_type_message)
 
 isc_result_t omapi_connection_sign_data (int mode,
-					 DST_KEY *key,
+					 dst_key_t *key,
 					 void **context,
 					 const unsigned char *data,
 					 const unsigned len,
@@ -270,19 +273,16 @@ void omapi_connection_trace_setup (void);
 void omapi_buffer_trace_setup (void);
 void omapi_connection_register (omapi_connection_object_t *,
 				const char *, int);
-void trace_mr_init (void);
-
 OMAPI_ARRAY_TYPE_DECL(omapi_listener, omapi_listener_object_t);
 OMAPI_ARRAY_TYPE_DECL(omapi_connection, omapi_connection_object_t);
 
 isc_result_t omapi_handle_clear(omapi_handle_t);
 
-extern int log_priority;
 extern int log_perror;
 extern void (*log_cleanup) (void);
 
 void log_fatal (const char *, ...)
-	__attribute__((__format__(__printf__,1,2)));
+	__attribute__((__format__(__printf__,1,2))) ISC_DHCP_NORETURN;
 int log_error (const char *, ...)
 	__attribute__((__format__(__printf__,1,2)));
 int log_info (const char *, ...)

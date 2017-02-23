@@ -30,28 +30,22 @@ make_resolv_conf() {
     fi
 }
 
+# set host name
 set_hostname() {
     local current_hostname
-    current_hostname=$(hostname)
 
-    if [ -z "$current_hostname" ] || [ "$current_hostname" = "(none)" ]; then
-        hostname "$new_host_name"
+    if [ -n "$new_host_name" ]; then
+        current_hostname=$(hostname)
+
+        if [ -z "$current_hostname" ] || [ "$current_hostname" = "(none)" ]; then
+            hostname "$new_host_name"
+        fi
     fi
 }
 
 # set up some variables for DHCP handlers below
 if [ -n "$new_subnet_mask" ]; then
     new_mask="/$(ptom $new_subnet_mask)"
-fi
-if [ -n "$old_subnet_mask" ]; then
-    old_mask="/$(ptom $old_subnet_mask)"
-fi
-
-if [ -n "$new_broadcast_address" ]; then
-    new_broadcast_arg="broadcast $new_broadcast_address"
-fi
-if [ -n "$old_broadcast_address" ]; then
-    old_broadcast_arg="broadcast $old_broadcast_address"
 fi
 
 # Execute the operation
@@ -88,8 +82,8 @@ case "$reason" in
            [ "$old_ip_address" != "$new_ip_address" ] ||
            [ "$reason" = "BOUND" ] || [ "$reason" = "REBOOT" ]; then
 
-            ifconfig $interface inet $new_ip_address $new_subnet_arg \
-                $new_broadcast_arg $medium $mtu_arg
+            ifconfig $interface inet $new_ip_address ${new_subnet_mask:+netmask $new_subnet_mask} \
+                ${new_broadcast_address:+broadcast $new_broadcast_address} $medium $mtu_arg
             route add $new_ip_address 127.1 $metric_arg >/dev/null 2>&1 || true
             for router in $new_routers; do
                 route add default $router >/dev/null 2>&1

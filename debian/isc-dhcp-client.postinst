@@ -17,27 +17,6 @@ case "$1" in
             fi
         fi
 
-	if [ -z "$2" ]; then
-		if [ -e /etc/dhcp3/dhclient.conf ]; then
-			cp /etc/dhcp3/dhclient.conf /etc/dhcp/dhclient.conf
-		fi
-	fi
-
-	# Clean up old AppArmor profile for upgrades from Ubuntu 10.10 to 11.04
-	# and 10.04 to 12.04 (ie, dhcp3-client -> isc-dhcp-client transition).
-	# This is needed (as opposed to simply waiting for a 'purge') because
-	# the dhclient3 and dhclient profiles provide AppArmor rules for the
-	# same binaries (/usr/lib/NetworkManager/nm-dhcp-client.action and
-	# /usr/lib/connman/scripts/dhclient-script) and not moving the old
-	# profile aside would mean that the old rules for these binaries take
-	# precedence over the rules provided by the new dhclient profile, since
-	# the old one is loaded after the first. (LP: #688191)
-	if dpkg --compare-versions "$2" lt 4.1.1-P1-15ubuntu2 ; then
-		if [ -e /etc/apparmor.d/sbin.dhclient3 ]; then
-			mv -f /etc/apparmor.d/sbin.dhclient3 /etc/apparmor.d/sbin.dhclient3.dpkg-old
-		fi
-	fi
-
         ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
