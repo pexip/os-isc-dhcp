@@ -3,7 +3,7 @@
    Examine and modify omapi objects. */
 
 /*
- * Copyright (c) 2009-2011 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2009-2011,2013,2014 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 2004-2007 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 2001-2003 by Internet Software Consortium
  *
@@ -25,12 +25,6 @@
  *   <info@isc.org>
  *   https://www.isc.org/
  *
- * This software has been written for Internet Systems Consortium
- * by Ted Lemon in cooperation with Vixie Enterprises and Nominum, Inc.
- * To learn more about Internet Systems Consortium, see
- * ``https://www.isc.org/''.  To learn more about Vixie Enterprises,
- * see ``http://www.vix.com''.   To learn more about Nominum, Inc., see
- * ``http://www.nominum.com''.
  */
 
 #include "config.h"
@@ -41,7 +35,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <isc-dhcp/result.h>
+//#include "result.h"
 #include <syslog.h>
 #include "dhcpctl.h"
 #include "dhcpd.h"
@@ -106,7 +100,7 @@ main(int argc, char **argv) {
 	}
 
 	/* Initially, log errors to stderr as well as to syslogd. */
-	openlog ("omshell", LOG_NDELAY, DHCPD_LOG_FACILITY);
+	openlog ("omshell", DHCP_LOG_OPTIONS, DHCPD_LOG_FACILITY);
 	status = dhcpctl_initialize ();
 	if (status != ISC_R_SUCCESS) {
 		fprintf (stderr, "dhcpctl_initialize: %s\n",
@@ -314,20 +308,31 @@ main(int argc, char **argv) {
 		    break;
 
 		  case KEY:
-		    token = next_token (&val, (unsigned *)0, cfile);
-		    if (!is_identifier (token)) {
-			    printf ("usage: key <name> <value>\n");
-			    skip_to_semi (cfile);
-			    break;
+		    token = peek_token(&val, (unsigned *)0, cfile);
+		    if (token == STRING) {
+			    token = next_token (&val, (unsigned *)0, cfile);
+			    if (!is_identifier (token)) {
+				    printf ("usage: key <name> <value>\n");
+				    skip_to_semi (cfile);
+				    break;
+			    }
+			    s = dmalloc (strlen (val) + 1, MDL);
+			    if (!s) {
+				    printf ("no memory for key name.\n");
+				    skip_to_semi (cfile);
+				    break;
+			    }
+			    strcpy (s, val);
+		    } else {
+			    s = parse_host_name(cfile);
+			    if (s == NULL) {
+				    printf ("usage: key <name> <value>\n");
+				    skip_to_semi(cfile);
+				    break;
+			    }
 		    }
-		    s = dmalloc (strlen (val) + 1, MDL);
-		    if (!s) {
-			    printf ("no memory for key name.\n");
-			    skip_to_semi (cfile);
-			    break;
-		    }
-		    strcpy (s, val);
 		    name = s;
+
 		    memset (&secret, 0, sizeof secret);
 		    if (!parse_base64 (&secret, cfile)) {
 			    skip_to_semi (cfile);
@@ -455,8 +460,12 @@ main(int argc, char **argv) {
 			    break;
 		    }
 
-		    s1[0] = '\0';
-		    strncat (s1, val, sizeof(s1)-1);
+#ifdef HAVE_STRLCPY
+		    strlcpy (s1, val, sizeof(s1));
+#else
+		    s1[0] = 0;
+		    strncat (s1, val, sizeof(s1)-strlen(s1)-1);
+#endif
 		    
 		    token = next_token (&val, (unsigned *)0, cfile);
 		    if (token != EQUAL)
@@ -559,8 +568,12 @@ main(int argc, char **argv) {
 			    break;
 		    }
 
-		    s1[0] = '\0';
-		    strncat (s1, val, sizeof(s1)-1);
+#if HAVE_STRLCPY
+		    strlcpy (s1, val, sizeof(s1));
+#else
+		    s1[0] = 0;
+		    strncat (s1, val, sizeof(s1)-strlen(s1)-1);
+#endif
 		    
 		    token = next_token (&val, (unsigned *)0, cfile);
 		    if (token != END_OF_FILE && token != EOL)
@@ -719,5 +732,7 @@ main(int argc, char **argv) {
 isc_result_t dhcp_set_control_state (control_object_state_t oldstate,
 				     control_object_state_t newstate)
 {
-	return ISC_R_SUCCESS;
+	if (newstate != server_shutdown)
+		return ISC_R_SUCCESS;
+	exit (0);
 }

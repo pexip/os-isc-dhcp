@@ -15,7 +15,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $Id: t_api.c,v 1.2.244.1 2009-01-22 02:07:42 sar Exp $ */
+/* $Id: t_api.c,v 1.4 2009/10/28 04:12:30 sar Exp $ */
 
 /*! \file */
 
@@ -43,15 +43,15 @@
 
 #include <sys/wait.h>
 
-#include <isc-dhcp/boolean.h>
-#include <isc-dhcp/commandline.h>
-#include <isc-dhcp/print.h>
-#include <isc-dhcp/string.h>
-#include <isc-dhcp/mem.h>
+#include <isc/boolean.h>
+#include <isc/commandline.h>
+#include <isc/print.h>
+#include <isc/string.h>
+#include <isc/mem.h>
 
 #ifdef DNS_SUPPORT
 #include <dns/compress.h>
-#include <dns/result.h>
+#include <omapip/result.h>
 #endif /* DNS_SUPPORT */
 
 #ifndef BIND_SUPPORT
@@ -537,12 +537,12 @@ t_fgetbs(FILE *fp) {
 	int	c;
 	size_t	n;
 	size_t	size;
-	char	*buf;
+	char	*buf, *old;
 	char	*p;
 
-	n	= 0;
-	size	= T_BUFSIZ;
-	buf	= (char *) malloc(T_BUFSIZ * sizeof(char));
+	n = 0;
+	size = T_BUFSIZ;
+	old = buf = (char *) malloc(T_BUFSIZ * sizeof(char));
 
 	if (buf != NULL) {
 		p = buf;
@@ -558,7 +558,8 @@ t_fgetbs(FILE *fp) {
 				buf = (char *)realloc(buf,
 						      size * sizeof(char));
 				if (buf == NULL)
-					break;
+					goto err;
+				old = buf;
 				p = buf + n;
 			}
 		}
@@ -569,7 +570,10 @@ t_fgetbs(FILE *fp) {
 		}
 		return (buf);
 	} else {
-		fprintf(stderr, "malloc failed %d", errno);
+ err:
+		if (old != NULL)
+			free(old);
+		fprintf(stderr, "malloc/realloc failed %d", errno);
 		return(NULL);
 	}
 }
