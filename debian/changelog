@@ -4,6 +4,7 @@ isc-dhcp (4.3.1-6+deb8u2pexip1) pexip; urgency=low
   * Retain the following changes from Ubuntu:
     - dhclient-script.linux: handle /etc/resolv.conf being a symlink
     - debian/dhclient.conf: Set for IPv6 (dhcp6.*).
+  * debian/dhclient.conf: reduce timeout to 10s
 
  -- John-Mark Bell <jmb@pexip.com>  Thu, 23 Feb 2017 20:19:31 +0000
 
