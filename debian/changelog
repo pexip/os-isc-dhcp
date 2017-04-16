@@ -1,6 +1,8 @@
 isc-dhcp (4.3.1-6+deb8u2pexip1) pexip; urgency=low
 
   * Migrate to Jessie
+  * Retain the following changes from Ubuntu:
+    - dhclient-script.linux: handle /etc/resolv.conf being a symlink
 
  -- John-Mark Bell <jmb@pexip.com>  Thu, 23 Feb 2017 20:19:31 +0000
 
