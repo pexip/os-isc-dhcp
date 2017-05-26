@@ -17,6 +17,14 @@ case "$1" in
             fi
         fi
 
+        # Clean out old apparmor profile
+        if dpkg --compare-versions "$2" lt-nl "4.3.1-6+deb8u2pexip2"; then
+            rm -f "/etc/apparmor.d/disable/sbin.dhclient" || true
+            rm -f "/etc/apparmor.d/force-complain/sbin.dhclient" || true
+            rm -f "/etc/apparmor.d/local/sbin.dhclient" || true
+            rmdir /etc/apparmor.d/local 2>/dev/null || true
+        fi
+
         ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

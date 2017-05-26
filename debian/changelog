@@ -1,3 +1,10 @@
+isc-dhcp (4.3.1-6+deb8u2pexip2) pexip; urgency=low
+
+  * debian/isc-dhcp-client.{maintscript, postinst}:
+    remove AppArmor profile on upgrade
+
+ -- John-Mark Bell <jmb@pexip.com>  Fri, 26 May 2017 12:47:05 +0100
+
 isc-dhcp (4.3.1-6+deb8u2pexip1) pexip; urgency=low
 
   * Migrate to Jessie
