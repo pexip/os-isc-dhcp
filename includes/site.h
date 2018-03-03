@@ -111,6 +111,9 @@
 /* Define this if you want to debug the host part of the inform processing */
 /* #define DEBUG_INFORM_HOST */
 
+/* Define this if you want to debug the binary leases (lease_chain) code */
+/* #define DEBUG_BINARY_LEASES */
+
 /* Define this if you want DHCP failover protocol support in the DHCP
    server. */
 
@@ -187,6 +190,12 @@
 
 /* #define USE_RAW_SOCKETS */
 
+/* Define this to keep the old program name (e.g., "dhcpd" for
+   the DHCP server) in place of the (base) name the program was
+   invoked with. */
+
+/* #define OLD_LOG_NAME */
+
 /* Define this to change the logging facility used by dhcpd. */
 
 /* #define DHCPD_LOG_FACILITY LOG_DAEMON */
@@ -246,32 +255,9 @@
 
 #define SERVER_ID_FOR_NAK
 
-/* When processing a request do a simple check to compare the
-   server id the client sent with the one the server would send.
-   In order to minimize the complexity of the code the server
-   only checks for a server id option in the global and subnet
-   scopes.  Complicated configurations may result in differnet
-   server ids for this check and when the server id for a reply
-   packet is determined, which would prohibit the server from
-   responding.
-
-   The primary use for this option is when a client broadcasts
-   a request but requires the response to come from one of the
-   failover peers.  An example of this would be when a client
-   reboots while its lease is still active - in this case both
-   servers will normally respond.  Most of the time the client
-   won't check the server id and can use either of the responses.
-   However if the client does check the server id it may reject
-   the response if it came from the wrong peer.  If the timing
-   is such that the "wrong" peer responds first most of the time
-   the client may not get an address for some time.
-
-   Currently this option is only available when failover is in
-   use.
-
-   Care should be taken before enabling this option. */
-
-/* #define SERVER_ID_CHECK */
+/* NOTE:  SERVER_ID_CHECK switch has been removed. Enabling server id
+ * checking is now done via the server-id-check statement. Please refer
+ * to the dhcpd manpage (server/dhcpd.conf.5) */
 
 /* Include code to do a slow transition of DDNS records
    from the interim to the standard version, or backwards.
@@ -304,10 +290,39 @@
    removal of this define.  Use at your own risk.  */
 /* #define ENABLE_GENTLE_SHUTDOWN */
 
+/* Include old error codes.  This is provided in case you
+   are building an external program similar to omshell for
+   which you need the ISC_R_* error codes.  You should switch
+   to DHCP_R_* error codes for those that have been defined
+   (see includes/omapip/result.h).  The extra defines and
+   this option will be removed at some time. */
+/* #define INCLUDE_OLD_DHCP_ISC_ERROR_CODES */
+
+/* Use the older factors for scoring a lease in the v6 client code.
+   The new factors cause the client to choose more bindings (IAs)
+   over more addresse within a binding.  Most uses will get a
+   single address in a single binding and only get an adverstise
+   from a single server and there won't be a difference. */
+/* #define USE_ORIGINAL_CLIENT_LEASE_WEIGHTS */
+
+/* Print out specific error messages for dhclient, dhcpd
+   or dhcrelay when processing an incorrect command line.  This
+   is included for those that might require the exact error
+   messages, as we don't expect that is necessary it is on by
+   default. */
+#define PRINT_SPECIFIC_CL_ERRORS
+
+/* Limit the value of a file descriptor the serve will use
+   when accepting a connecting request.  This can be used to
+   limit the number of TCP connections that the server will
+   allow at one time.  A value of 0 means there is no limit.*/
+#define MAX_FD_VALUE 200
+
 /* Include definitions for various options.  In general these
    should be left as is, but if you have already defined one
    of these and prefer your definition you can comment the 
    RFC define out to avoid conflicts */
+#define RFC2563_OPTIONS
 #define RFC2937_OPTIONS
 #define RFC4776_OPTIONS
 #define RFC4833_OPTIONS
@@ -320,10 +335,14 @@
 #define RFC5970_OPTIONS
 #define RFC5986_OPTIONS
 #define RFC6011_OPTIONS
+#define RFC6011_OPTIONS
+#define RFC6153_OPTIONS
 #define RFC6334_OPTIONS
 #define RFC6440_OPTIONS
 #define RFC6731_OPTIONS
 #define RFC6939_OPTIONS
 #define RFC6977_OPTIONS
 #define RFC7083_OPTIONS
-
+#define RFC7341_OPTIONS
+#define RFC7618_OPTIONS
+#define RFC7710_OPTIONS

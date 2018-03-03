@@ -1,3 +1,6 @@
 usr/sbin/dhcpd
 
-debian/dhcpd.conf etc/dhcp
+usr/bin/omshell
+
+debian/tmp/dhcpd.conf etc/dhcp
+debian/tmp/dhcpd6.conf etc/dhcp

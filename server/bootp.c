@@ -3,8 +3,7 @@
    BOOTP Protocol support. */
 
 /*
- * Copyright (c) 2009,2012-2014 by Internet Systems Consortium, Inc. ("ISC")
- * Copyright (c) 2004,2005,2007 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004-2016 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1995-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -170,29 +169,29 @@ void bootp (packet)
 
 	/* Execute the host statements. */
 	if (hp != NULL) {
-		execute_statements_in_scope (NULL, packet, lease, NULL,
-					     packet->options, options,
-					     &lease->scope, hp->group,
-					     lease->subnet->group, NULL);
+		execute_statements_in_scope(NULL, packet, lease, NULL,
+					    packet->options, options,
+					    &lease->scope, hp->group,
+					    lease->subnet->group, NULL);
 	}
 	
 	/* Drop the request if it's not allowed for this client. */
 	if ((oc = lookup_option (&server_universe, options, SV_ALLOW_BOOTP)) &&
-	    !evaluate_boolean_option_cache (&ignorep, packet, lease,
-					    (struct client_state *)0,
-					    packet -> options, options,
-					    &lease -> scope, oc, MDL)) {
+	    !evaluate_boolean_option_cache(&ignorep, packet, lease,
+					   NULL,
+					   packet->options, options,
+					   &lease->scope, oc, MDL)) {
 		if (!ignorep)
 			log_info ("%s: bootp disallowed", msgbuf);
 		goto out;
 	} 
 
-	if ((oc = lookup_option (&server_universe,
+	if ((oc = lookup_option(&server_universe,
 				 options, SV_ALLOW_BOOTING)) &&
-	    !evaluate_boolean_option_cache (&ignorep, packet, lease,
-					    (struct client_state *)0,
-					    packet -> options, options,
-					    &lease -> scope, oc, MDL)) {
+	    !evaluate_boolean_option_cache(&ignorep, packet, lease,
+					   NULL,
+					   packet->options, options,
+					   &lease->scope, oc, MDL)) {
 		if (!ignorep)
 			log_info ("%s: booting disallowed", msgbuf);
 		goto out;
@@ -205,20 +204,26 @@ void bootp (packet)
 
 	/* If we didn't get a known vendor magic number on the way in,
 	   just copy the input options to the output. */
-	if (!packet -> options_valid &&
-	    !(evaluate_boolean_option_cache
-	      (&ignorep, packet, lease, (struct client_state *)0,
-	       packet -> options, options, &lease -> scope,
-	       lookup_option (&server_universe, options,
-			      SV_ALWAYS_REPLY_RFC1048), MDL))) {
-		memcpy (outgoing.raw -> options,
-			packet -> raw -> options, DHCP_MAX_OPTION_LEN);
-		outgoing.packet_length = BOOTP_MIN_LEN;
+	i = SV_ALWAYS_REPLY_RFC1048;
+	if (!packet->options_valid &&
+	    !(evaluate_boolean_option_cache(&ignorep, packet, lease, NULL,
+					    packet->options, options,
+					    &lease->scope,
+					    lookup_option (&server_universe,
+							   options, i), MDL))) {
+		if (packet->packet_length > DHCP_FIXED_NON_UDP) {
+			memcpy(outgoing.raw->options, packet->raw->options,
+			packet->packet_length - DHCP_FIXED_NON_UDP);
+		}
+
+		outgoing.packet_length =
+			(packet->packet_length < BOOTP_MIN_LEN)
+					       ? BOOTP_MIN_LEN
+					       : packet->packet_length;
 	} else {
 
 		/* Use the subnet mask from the subnet declaration if no other
 		   mask has been provided. */
-
 		oc = (struct option_cache *)0;
 		i = DHO_SUBNET_MASK;
 		if (!lookup_option (&dhcp_universe, options, i)) {
@@ -237,6 +242,11 @@ void bootp (packet)
 				option_cache_dereference (&oc, MDL);
 			}
 		}
+
+		/* If use-host-decl-names is enabled and there is a hostname
+		 * defined in the host delcartion, send it back in hostname
+		 * option */
+		use_host_decl_name(packet, lease, options);
 
 		/* Pack the options into the buffer.  Unlike DHCP, we
 		   can't pack options into the filename and server
@@ -338,6 +348,34 @@ void bootp (packet)
 
 	/* We're done with the option state. */
 	option_state_dereference (&options, MDL);
+
+#if defined(DHCPv6) && defined(DHCP4o6)
+	if (dhcpv4_over_dhcpv6 && (packet->dhcp4o6_response != NULL)) {
+		/* Report what we're doing... */
+		log_info("%s", msgbuf);
+		log_info("DHCP4o6 BOOTREPLY for %s to %s (%s) via %s",
+			 piaddr(lease->ip_addr),
+			 ((hp != NULL) && (hp->name != NULL)) ?
+				hp -> name : "unknown",
+			 print_hw_addr (packet->raw->htype,
+					packet->raw->hlen,
+					packet->raw->chaddr),
+			 piaddr(packet->client_addr));
+
+		/* fill dhcp4o6_response */
+		packet->dhcp4o6_response->len = outgoing.packet_length;
+		packet->dhcp4o6_response->buffer = NULL;
+		if (!buffer_allocate(&packet->dhcp4o6_response->buffer,
+				     outgoing.packet_length, MDL)) {
+			log_fatal("No memory to store DHCP4o6 reply.");
+		}
+		packet->dhcp4o6_response->data =
+			packet->dhcp4o6_response->buffer->data;
+		memcpy(packet->dhcp4o6_response->buffer->data,
+		       outgoing.raw, outgoing.packet_length);
+		goto out;
+	}
+#endif
 
 	/* Set up the hardware destination address... */
 	hto.hbuf [0] = packet -> raw -> htype;

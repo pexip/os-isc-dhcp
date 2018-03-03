@@ -3,8 +3,7 @@
    Find and identify the network interfaces. */
 
 /*
- * Copyright (c) 2013-2014 by Internet Systems Consortium, Inc. ("ISC")
- * Copyright (c) 2004-2009,2011 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004-2016 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1995-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -45,6 +44,7 @@ int interfaces_invalidated;
 int quiet_interface_discovery;
 u_int16_t local_port;
 u_int16_t remote_port;
+int dhcpv4_over_dhcpv6 = 0;
 int (*dhcp_interface_setup_hook) (struct interface_info *, struct iaddr *);
 int (*dhcp_interface_discovery_hook) (struct interface_info *);
 isc_result_t (*dhcp_interface_startup_hook) (struct interface_info *);
@@ -332,8 +332,8 @@ next_iface(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
 			continue;
 		}
 
-		strcpy(info->name, p->lifr_name);
-		memset(&info->addr, 0, sizeof(info->addr));
+		memset(info, 0, sizeof(struct iface_info));
+		strncpy(info->name, p->lifr_name, sizeof(info->name) - 1);
 		memcpy(&info->addr, &p->lifr_addr, sizeof(p->lifr_addr));
 
 #if defined(sun) || defined(__linux)
@@ -349,7 +349,7 @@ next_iface(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
 		 (strncmp(info->name, "dummy", 5) == 0));
 	
 	memset(&tmp, 0, sizeof(tmp));
-	strcpy(tmp.lifr_name, info->name);
+	strncpy(tmp.lifr_name, info->name, sizeof(tmp.lifr_name) - 1);
 	if (ioctl(ifaces->sock, SIOCGLIFFLAGS, &tmp) < 0) {
 		log_error("Error getting interface flags for '%s'; %m", 
 			  p->lifr_name);
@@ -547,7 +547,7 @@ next_iface4(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
 				log_error("Interface name '%s' too long", name);
 				return 0;
 			}
-			strcpy(info->name, name);
+			strncpy(info->name, name, sizeof(info->name) - 1);
 
 #ifdef ALIAS_NAMED_PERMUTED
 			/* interface aliases look like "eth0:1" or "wlan1:3" */
@@ -564,7 +564,7 @@ next_iface4(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
 #endif
 
 		memset(&tmp, 0, sizeof(tmp));
-		strcpy(tmp.ifr_name, name);
+		strncpy(tmp.ifr_name, name, sizeof(tmp.ifr_name) - 1);
 		if (ioctl(ifaces->sock, SIOCGIFADDR, &tmp) < 0) {
 			if (errno == EADDRNOTAVAIL) {
 				continue;
@@ -577,7 +577,7 @@ next_iface4(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
 		memcpy(&info->addr, &tmp.ifr_addr, sizeof(tmp.ifr_addr));
 
 		memset(&tmp, 0, sizeof(tmp));
-		strcpy(tmp.ifr_name, name);
+		strncpy(tmp.ifr_name, name, sizeof(tmp.ifr_name) - 1);
 		if (ioctl(ifaces->sock, SIOCGIFFLAGS, &tmp) < 0) {
 			log_error("Error getting interface flags for '%s'; %m", 
 			  	name);
@@ -664,7 +664,7 @@ next_iface6(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
 			log_error("IPv6 interface name '%s' too long", name);
 			return 0;
 		}
-		strcpy(info->name, name);
+		strncpy(info->name, name, sizeof(info->name) - 1);
 
 #ifdef SKIP_DUMMY_INTERFACES
 	} while (strncmp(info->name, "dummy", 5) == 0);
@@ -702,7 +702,7 @@ next_iface6(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
 	 * Get our flags.
 	 */
 	memset(&tmp, 0, sizeof(tmp));
-	strcpy(tmp.ifr_name, name);
+	strncpy(tmp.ifr_name, name, sizeof(tmp.ifr_name) - 1);
 	if (ioctl(ifaces->sock, SIOCGIFFLAGS, &tmp) < 0) {
 		log_error("Error getting interface flags for '%s'; %m", name);
 		*err = 1;
@@ -723,6 +723,7 @@ next_iface6(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
  */
 int
 next_iface(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
+	memset(info, 0, sizeof(struct iface_info));
 	if (next_iface4(info, err, ifaces)) {
 		return 1;
 	}
@@ -815,7 +816,8 @@ next_iface(struct iface_info *info, int *err, struct iface_conf_list *ifaces) {
 		*err = 1;
 		return 0;
 	}
-	strcpy(info->name, ifaces->next->ifa_name);
+	memset(info, 0, sizeof(struct iface_info));
+	strncpy(info->name, ifaces->next->ifa_name, sizeof(info->name) - 1);
 	memcpy(&info->addr, ifaces->next->ifa_addr, 
 	       ifaces->next->ifa_addr->sa_len);
 	info->flags = ifaces->next->ifa_flags;
@@ -948,8 +950,14 @@ discover_interfaces(int state) {
 		ir = 0;
 	else if (state == DISCOVER_UNCONFIGURED)
 		ir = INTERFACE_REQUESTED | INTERFACE_AUTOMATIC;
-	else
+	else {
 		ir = INTERFACE_REQUESTED;
+		if (state == DISCOVER_RELAY && local_family == AF_INET) {
+			/* We're a v4 relay without specifically requested
+			 * interfaces, so mark them all as bidirectional. */
+			ir |= INTERFACE_STREAMS;
+		}
+	}
 
 	/* Cycle through the list of interfaces looking for IP addresses. */
 	while (next_iface(&info, &err, &ifaces)) {
@@ -984,7 +992,7 @@ discover_interfaces(int state) {
 				log_fatal("Error allocating interface %s: %s",
 					  info.name, isc_result_totext(status));
 			}
-			strcpy(tmp->name, info.name);
+			strncpy(tmp->name, info.name, sizeof(tmp->name) - 1);
 			interface_snorf(tmp, ir);
 			interface_dereference(&tmp, MDL);
 			tmp = interfaces; /* XXX */
@@ -1002,7 +1010,8 @@ discover_interfaces(int state) {
 			/* We don't want the loopback interface. */
 			if (a->sin_addr.s_addr == htonl(INADDR_LOOPBACK) &&
 			    ((tmp->flags & INTERFACE_AUTOMATIC) &&
-			     state == DISCOVER_SERVER))
+			     ((state == DISCOVER_SERVER) ||
+			      (state == DISCOVER_SERVER46))))
 				continue;
 
 			/* If the only address we have is 0.0.0.0, we
@@ -1029,7 +1038,8 @@ discover_interfaces(int state) {
 			/* We don't want the loopback interface. */
 			if (IN6_IS_ADDR_LOOPBACK(&a->sin6_addr) && 
 			    ((tmp->flags & INTERFACE_AUTOMATIC) &&
-			     state == DISCOVER_SERVER))
+			     ((state == DISCOVER_SERVER) ||
+			      (state == DISCOVER_SERVER46))))
 			    continue;
 
 			/* If the only address we have is 0.0.0.0, we
@@ -1226,31 +1236,48 @@ discover_interfaces(int state) {
 		tmp -> index = -1;
 
 		/* Register the interface... */
-		if (local_family == AF_INET) {
-			if_register_receive(tmp);
-			if_register_send(tmp);
+		switch (local_family) {
+		case AF_INET:
+			if (!dhcpv4_over_dhcpv6) {
+				if_register_receive(tmp);
+				if_register_send(tmp);
+			} else {
+				/* get_hw_addr() was called by register. */
+				get_hw_addr(tmp->name, &tmp->hw_address);
+			}
+			break;
 #ifdef DHCPv6
-		} else {
+		case AF_INET6:
 			if ((state == DISCOVER_SERVER) ||
 			    (state == DISCOVER_RELAY)) {
 				if_register6(tmp, 1);
+			} else if (state == DISCOVER_SERVER46) {
+				/* get_hw_addr() was called by if_register*6
+				   so now we have to call it explicitly
+				   to not leave the hardware address unknown
+				   (some code expects it cannot be. */
+				get_hw_addr(tmp->name, &tmp->hw_address);
 			} else {
 				if_register_linklocal6(tmp);
 			}
+			break;
 #endif /* DHCPv6 */
 		}
 
 		interface_stash (tmp);
 		wifcount++;
 #if defined (F_SETFD)
-		if (fcntl (tmp -> rfdesc, F_SETFD, 1) < 0)
+		/* if_register*() are no longer always called so
+		   descriptors  must be checked. */
+		if ((tmp -> rfdesc >= 0) &&
+		    (fcntl (tmp -> rfdesc, F_SETFD, 1) < 0))
 			log_error ("Can't set close-on-exec on %s: %m",
 				   tmp -> name);
-		if (tmp -> rfdesc != tmp -> wfdesc) {
-			if (fcntl (tmp -> wfdesc, F_SETFD, 1) < 0)
-				log_error ("Can't set close-on-exec on %s: %m",
-					   tmp -> name);
-		}
+		if ((tmp -> wfdesc != tmp -> rfdesc) &&
+		    (tmp -> wfdesc >= 0) &&
+		    (fcntl (tmp -> wfdesc, F_SETFD, 1) < 0))
+			log_error ("Can't set close-on-exec on %s: %m",
+				   tmp -> name);
 #endif
 	      next:
 		interface_dereference (&tmp, MDL);
@@ -1308,7 +1335,8 @@ discover_interfaces(int state) {
 		log_fatal ("Not configured to listen on any interfaces!");
 	}
 
-	if ((local_family == AF_INET) && !setup_fallback) {
+	if ((local_family == AF_INET) &&
+	    !setup_fallback && !dhcpv4_over_dhcpv6) {
 		setup_fallback = 1;
 		maybe_setup_fallback();
 	}

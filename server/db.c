@@ -3,8 +3,7 @@
    Persistent database management routines for DHCPD... */
 
 /*
- * Copyright (c) 2012-2014 by Internet Systems Consortium, Inc. ("ISC")
- * Copyright (c) 2004-2010 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004-2016 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1995-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -56,10 +55,10 @@ write_binding_scope(FILE *db_file, struct binding *bnd, char *prepend) {
 	if (bnd->value->type == binding_data) {
 		if (bnd->value->value.data.data != NULL) {
 			s = quotify_buf(bnd->value->value.data.data,
-					bnd->value->value.data.len, MDL);
+					bnd->value->value.data.len, '"', MDL);
 			if (s != NULL) {
 				errno = 0;
-				fprintf(db_file, "%sset %s = \"%s\";",
+				fprintf(db_file, "%sset %s = %s;",
 					prepend, bnd->name, s);
 				dfree(s, MDL);
 				if (errno)
@@ -207,10 +206,11 @@ int write_lease (lease)
 			++errors;
 	}
 	if (lease -> uid_len) {
-		s = quotify_buf (lease -> uid, lease -> uid_len, MDL);
+		s = format_lease_id(lease->uid, lease->uid_len, lease_id_format,
+				    MDL);
 		if (s) {
 			errno = 0;
-			fprintf (db_file, "\n  uid \"%s\";", s);
+			fprintf (db_file, "\n  uid %s;", s);
 			if (errno)
 				++errors;
 			dfree (s, MDL);
@@ -402,10 +402,14 @@ int write_host (host)
 					++errors;
 			}
 
+			/* We're done with ip_addrs so pitch it */
+			data_string_forget (&ip_addrs, MDL);
+
 			errno = 0;
 			fputc (';', db_file);
 			if (errno)
 				++errors;
+
 		}
 
 		if (host -> named_group) {
@@ -535,23 +539,23 @@ write_ia(const struct ia_xx *ia) {
 		++count;
 	}
 
-	
-	s = quotify_buf(ia->iaid_duid.data, ia->iaid_duid.len, MDL);
+	s = format_lease_id(ia->iaid_duid.data, ia->iaid_duid.len,
+			    lease_id_format, MDL);
 	if (s == NULL) {
 		goto error_exit;
 	}
 	switch (ia->ia_type) {
 	case D6O_IA_NA:
-		fprintf_ret = fprintf(db_file, "ia-na \"%s\" {\n", s);
+		fprintf_ret = fprintf(db_file, "ia-na %s {\n", s);
 		break;
 	case D6O_IA_TA:
-		fprintf_ret = fprintf(db_file, "ia-ta \"%s\" {\n", s);
+		fprintf_ret = fprintf(db_file, "ia-ta %s {\n", s);
 		break;
 	case D6O_IA_PD:
-		fprintf_ret = fprintf(db_file, "ia-pd \"%s\" {\n", s);
+		fprintf_ret = fprintf(db_file, "ia-pd %s {\n", s);
 		break;
 	default:
-		log_error("Unknown ia type %u for \"%s\" at %s:%d",
+		log_error("Unknown ia type %u for %s at %s:%d",
 			  (unsigned)ia->ia_type, s, MDL);
 		fprintf_ret = -1;
 	}
@@ -708,7 +712,8 @@ write_server_duid(void) {
 	 */
 	memset(&server_duid, 0, sizeof(server_duid));
 	copy_server_duid(&server_duid, MDL);
-	s = quotify_buf(server_duid.data, server_duid.len, MDL);
+	s = format_lease_id(server_duid.data, server_duid.len, lease_id_format,
+			    MDL);
 	data_string_forget(&server_duid, MDL);
 	if (s == NULL) {
 		goto error_exit;
@@ -717,7 +722,7 @@ write_server_duid(void) {
 	/*
 	 * Write to the leases file.
 	 */
-	fprintf_ret = fprintf(db_file, "server-duid \"%s\";\n\n", s);
+	fprintf_ret = fprintf(db_file, "server-duid %s;\n\n", s);
 	dfree(s, MDL);
 	if (fprintf_ret < 0) {
 		goto error_exit;
@@ -1017,9 +1022,6 @@ int commit_leases ()
 		return (0);
 	}
 
-	/* send out all deferred ACKs now */
-	flush_ackqueue(NULL);
-
 	/* If we haven't rewritten the lease database in over an
 	   hour, rewrite it now.  (The length of time should probably
 	   be configurable. */
@@ -1054,6 +1056,10 @@ void db_startup (testp)
 #if defined (TRACING)
 	if (!trace_playback ()) {
 #endif
+		/* Unset authoring_byte_order so we'll know if it was specified
+		   in the lease file or not. */
+		authoring_byte_order = 0;
+
 		/* Read in the existing lease file... */
 		status = read_conf_file (path_dhcpd_db,
 					 (struct group *)0, 0, 1);
@@ -1128,6 +1134,22 @@ int new_lease_file ()
 		log_error ("Can't create new lease file: %m");
 		return 0;
 	}
+
+#if defined (PARANOIA)
+	/*
+	 * If we are currently root and plan to change the
+	 * uid and gid change the file information so we
+	 * can manipulate it later, after we've changed
+	 * our group and user (that is dropped privileges.)
+	 */
+	if ((set_uid != 0) && (geteuid() == 0) &&
+	    (set_gid != 0) && (getegid() == 0)) {
+		if (fchown(db_fd, set_uid, set_gid)) {
+			log_fatal ("Can't chown new lease file: %m");
+		}
+	}
+#endif /* PARANOIA */
+
 	if ((new_db_file = fdopen(db_fd, "w")) == NULL) {
 		log_error("Can't fdopen new lease file: %m");
 		close(db_fd);
@@ -1142,11 +1164,23 @@ int new_lease_file ()
 	errno = 0;
 	fprintf (db_file, "# The format of this file is documented in the %s",
 		 "dhcpd.leases(5) manual page.\n");
+
 	if (errno)
 		goto fail;
 
 	fprintf (db_file, "# This lease file was written by isc-dhcp-%s\n\n",
 		 PACKAGE_VERSION);
+	if (errno)
+		goto fail;
+
+	fprintf (db_file, "# authoring-byte-order entry is generated,"
+                          " DO NOT DELETE\n");
+	if (errno)
+		goto fail;
+
+	fprintf (db_file, "authoring-byte-order %s;\n\n",
+		 (DHCP_BYTE_ORDER == LITTLE_ENDIAN ?
+		  "little-endian" : "big-endian"));
 	if (errno)
 		goto fail;
 
@@ -1206,7 +1240,7 @@ int new_lease_file ()
       fail:
 	lease_file_is_corrupt = db_validity;
       fdfail:
-	unlink (newfname);
+	(void)unlink (newfname);
 	return 0;
 }
 

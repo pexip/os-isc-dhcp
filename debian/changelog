@@ -1,4 +1,4 @@
-isc-dhcp (4.3.1-6+deb8u3) jessie-security; urgency=high
+isc-dhcp (4.3.5-3+deb9u1) stretch-security; urgency=high
 
   * Non-maintainer upload by the Security Team.
   * Plugs a socket descriptor leak in OMAPI (CVE-2017-3144) (Closes: #887413)
@@ -6,26 +6,205 @@ isc-dhcp (4.3.1-6+deb8u3) jessie-security; urgency=high
   * Correct buffer overrun in pretty_print_option (CVE-2018-5732)
     (Closes: #891786)
 
- -- Salvatore Bonaccorso <carnil@debian.org>  Sun, 04 Mar 2018 11:20:38 +0100
+ -- Salvatore Bonaccorso <carnil@debian.org>  Sat, 03 Mar 2018 17:27:05 +0100
 
-isc-dhcp (4.3.1-6+deb8u2) jessie-security; urgency=high
+isc-dhcp (4.3.5-3) unstable; urgency=medium
 
+  * Add support for read-only /etc (closes: #642544).
+    - Thanks to Scott Moser.
+  * Wait for /etc/resolv.conf to become writable (closes: #687337).
+    - Thanks to Stéphane Graber.
+  * Suggest policykit-1 instead of depending on it (closes: #850726).
+  * Fix typo in --with-randomdev configure argument (closes: #838382).
+  * Touch dhcpd6.leases before starting an ipv6 server (closes: #824770).
+    - Thanks to Terry Burton.
+  * Use getifaddrs() system call to handle alias interfaces (closes: #605657).
+    - Thanks to Jiri Popelka.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Mon, 09 Jan 2017 04:55:32 +0000
+
+isc-dhcp (4.3.5-2) unstable; urgency=medium
+
+  * Fix new upstream spelling errors.
+  * Add policykit-1 dependency to the server package (closes: #816325).
+  * Parse IPv6 server process id from the correct file (closes: #841766).
+  * Initialize all local variables in dhclient scripts (closes: #849100).
+  * Pass random device to configure when cross building (closes: #838382).
+    - Thanks to Helmut Grohne.
+  * Don't wait for a reply that will never come when releasing an ipv6 address
+    (closes: #769189).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 08 Jan 2017 23:11:52 +0000
+
+isc-dhcp (4.3.5-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add lsb-base dependency to isc-dhcp-relay.
+  * Use the original author's dhcp-lease-list manpage.
+  * Correct the description of the common package (closes: #832782).
+  * If no interfaces have been specified, start servers for both IPv4 and IPv6
+    (closes: #815319).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 26 Nov 2016 06:44:09 +0000
+
+isc-dhcp (4.3.5~b1-1) unstable; urgency=medium
+
+  * New upstream beta release.
+  * Fix some lintian warnings.
+  * Increase standards version.
+  * Update version control fields.
+  * Fix new upstream spelling mistakes.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 11 Sep 2016 22:59:15 +0000
+
+isc-dhcp (4.3.4-1) unstable; urgency=medium
+
+  * New upstream stable release (closes: #817158).
+  * Touch dhcpd.leases in the server init script (closes: 765910).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Tue, 05 Apr 2016 03:27:34 +0000
+
+isc-dhcp (4.3.4~b1-1) experimental; urgency=medium
+
+  * New upstream beta release:
+    - Fix CVE-2016-2774: limit the number of server TCP connections to 200.
+  * Link against bind 9.10.3.
+  * Include a manpage for dhcp-lease-list.
+  * Fix an error in the dhcpd.conf manpage.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 26 Mar 2016 01:55:17 +0000
+
+isc-dhcp (4.3.3-9) unstable; urgency=medium
+
+  * Update standards version.
+  * Drop manpage hyphens patch.
+  * Install upstream changelogs.
+  * Install an example dhcpd6.conf file.
+  * Install upstream's README file (closes: #791788).
+  * Fix incorrect path in dhcp-lease-list script (closes: #814693).
+  * Add a status option to the relay init stript (closes: #726604).
+  * Check IPv4 and IPv6 server status independently (closes: #815180).
+  * Use /etc/dhcp/dhcpd6.conf for the IPv6 server settings (closes: #816008).
+  * Touch dhcpd.leases during postinst if it doesn't exist (closes: #765910).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 28 Feb 2016 20:38:52 +0000
+
+isc-dhcp (4.3.3-8) unstable; urgency=medium
+
+  * Fix typos in recent changes to the server init script.
+  * Support server configurations still using INTERFACES (closes: #813339).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 13 Feb 2016 18:38:20 +0000
+
+isc-dhcp (4.3.3-7) unstable; urgency=medium
+
+  * Migrate to dbgsym debug packages.
+  * Fix spelling error in changelog entry.
+  * Include LDFLAGS in all calls to configure.
+  * Fix relaying return packets (closes: #648401).
+    - Thanks to Steinar H. Gunderson.
+  * Fix cross-architecture building (closes: #812525).
+    - Thanks to Helmut Grohne.
+  * Initialize exit status in dhclient-script (closes: #800914).
   * Fix CVE-2015-8605: maliciously crafted IPv4 packet can cause any of the
-    running DHCP applications (server, client, or relay) to crash.
+    running DHCP applications to crash (closes: #810875).
 
- -- Michael Gilbert <mgilbert@debian.org>  Sat, 09 Jan 2016 20:57:22 +0000
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 31 Jan 2016 01:31:59 +0000
 
-isc-dhcp (4.3.1-6+deb8u1) jessie; urgency=medium
+isc-dhcp (4.3.3-6) experimental; urgency=medium
 
-  [ Michael Gilbert ]
+  * Fix missing build flags from the last upload.
+  * Support IPv6 in the server init script (closes: #592539).
+    - Thanks to Florent Fourcot and Ron Murray.
+  * Don't assume an IPv6 prefix length of 64 (closes: #684009).
+    - Thanks to Arne Nordmark.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 04 Oct 2015 03:24:47 +0000
+
+isc-dhcp (4.3.3-5) unstable; urgency=medium
+
+  * Add dependencies for the debug package.
+  * Fix comments in the debug script (closes: #773804).
+  * Add diversions for isc-dhcp-client-ddns (closes: #800749).
+  * Fix directory output by the debug script (closes: #794770).
+  * Fix exit code handling in dhclient-script (closes: #692846).
+  * Escape parentheses in init script sed command (closes: #771530).
+  * Add more IP address detail to dhclient output (closes: #486611).
+  * Add dhcp6.fqdn and dhcp6.sntp-servers to the default request options.
+  * Avoid infinite loop caused by misconfigured rfc3442-classless-static-routes
+    (closes: #730294).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 03 Oct 2015 18:41:26 +0000
+
+isc-dhcp (4.3.3-4) unstable; urgency=medium
+
+  * Reenable NSUPDATE (closes: #798237).
+  * Add a DDNS enabled dhclient package.
+  * Include README file (closes: #791788).
+  * Recommend rather than depend on policycoreutils.
+  * Finish replacing macros in manpages (closes: #773801).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 20 Sep 2015 20:39:58 +0000
+
+isc-dhcp (4.3.3-3) unstable; urgency=medium
+
+  * Revert change to lease file paths (closes: #798177).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 06 Sep 2015 16:47:39 +0000
+
+isc-dhcp (4.3.3-2) unstable; urgency=medium
+
+  * Use default paths for lease files.
+  * Move omshell into the server package.
+  * Avoid unnecessary libirs dependencies.
+  * Recommend rather than depend isc-dhcp-common.
+  * Disable NSUPDATE (closes: #712503).
+  * Update translation (closes: #677918).
+  * Enable pid file logging (closes: #792928).
+  * Fix variables in manpages (closes: #570895).
+  * Use a symlink for the debug script (closes: #794771).
+  * Enable -user, -group, and -chroot server options (closes: #793490).
+  * Avoid launching the server when its already running (closes: #704175).
   * Fix error when max lease time is used on 64-bit systems (closes: #795227).
 
- -- Bastian Blank <bastian.blank@credativ.de>  Thu, 08 Oct 2015 11:54:59 +0000
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 06 Sep 2015 04:21:05 +0000
+
+isc-dhcp (4.3.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add uversionmangle to debian/watch.
+  * Restore Enhances field for the ldap package (closes: #790164).
+  * Add a logcheck snippet for the server package (closes: #688339).
+    - Thanks to Jonathan Wiltshire.
+  * Add DHCPv6 support to dhclient-script.linux.udeb (closes: #635897).
+    - Thanks to Colin Watson.
+  * Add policycoreutils dependency to isc-dhcp-server (closes: #797276).
+  * Fix undefined variables in dhclient-script.kfreebsd (closes: #691090).
+    - Thanks to Peter Marschall.
+  * Avoid condition where hostname could be set to '(none)' (closes: #604883).
+    - Thanks to Pavel Cahyna.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sat, 05 Sep 2015 19:20:42 +0000
+
+isc-dhcp (4.3.2-1) unstable; urgency=medium
+
+  * New upstream stable release.
+    - Many fixes to incorrect checksumming (closes: #353161, #652739).
+    - VLAN packets now only seen on VLAN interfaces (closes: #643564).
+  * Remove references to old dhcp3 packages (closes: #773476).
+  * Replace signing key with new upstream version.
+  * Fix typo in debug script (closes: #781768).
+  * Drop bind from the upstream tarball.
+  * Drop transitional debug packages.
+  * Drop dhcp3 conffile handling.
+  * Update debian/copyright.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 10 May 2015 22:44:17 +0000
 
 isc-dhcp (4.3.1-6) unstable; urgency=medium
 
   * Fix a regression in error handling for the server's init script
-    (closes: #775834).
+    (closes: #755834).
     - Thanks to François-Régis Vuillemin.
 
  -- Michael Gilbert <mgilbert@debian.org>  Fri, 13 Feb 2015 05:13:19 +0000
@@ -197,7 +376,7 @@ isc-dhcp (4.2.4-1) unstable; urgency=low
 isc-dhcp (4.2.2.dfsg.1-5) unstable; urgency=medium
 
   [ Andrew Pollock ]
-  * debian/dhclient.conf: send the hostname (closes: #151820) 
+  * debian/dhclient.conf: send the hostname (closes: #151820)
 
   [ Michael Gilbert ]
   * Fix cve-2011-4868: error in DDNS handling with IPv6 (closes: #655746)
@@ -273,7 +452,7 @@ isc-dhcp (4.2.2-1) unstable; urgency=low
   * debian/rules: added build-arch and build-indep targets
   * debian/rules: applied patch from Kees Cook to call dh_link (closes: #614992)
   * debian/dhclient-script.linux: applied patch from Colin Watson to make
-    dhclient-script support stateless DHCPv6 (closes: #632888) 
+    dhclient-script support stateless DHCPv6 (closes: #632888)
   * debian/dhclient-script.linux: fix regression for MTU <= 576 handling
     (closes: #638267)
   * Apply patch from Peter Marschall to split the rfc3442-classless-routes hook
@@ -310,7 +489,7 @@ isc-dhcp (4.2.2-1) unstable; urgency=low
   * debian/dhclient-script.*: apply patch from Peter Marschall to use alternate
     value expansion
   * debian/isc-dhcp-server.postinst: eliminate an error message from sed if no
-    interfaces are provided 
+    interfaces are provided
 
  -- Andrew Pollock <apollock@debian.org>  Sun, 28 Aug 2011 22:12:21 -0700
 
@@ -325,7 +504,7 @@ isc-dhcp (4.1.1-P1-17) unstable; urgency=low
 
   * Incorporate and acknowledge NMU
   * Apply a multitude of patches from Peter Marschall (closes: #609408)
-    - fix domain_name in domain_search check in dhclient-script 
+    - fix domain_name in domain_search check in dhclient-script
       (closes: #567141)
     - fix indentation in dhclient-script to improve readability
     - remove bashisms from dhclient-script
