@@ -1,3 +1,19 @@
+isc-dhcp (4.3.1-6+deb8u3pexip1) pexip; urgency=low
+
+  * New upstream release
+
+ -- John-Mark Bell <jmb@pexip.com>  Thu, 08 Mar 2018 15:37:06 +0000
+
+isc-dhcp (4.3.1-6+deb8u3) jessie-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * Plugs a socket descriptor leak in OMAPI (CVE-2017-3144) (Closes: #887413)
+  * Corrected refcnt loss in option parsing (CVE-2018-5733) (Closes: #891785)
+  * Correct buffer overrun in pretty_print_option (CVE-2018-5732)
+    (Closes: #891786)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Sun, 04 Mar 2018 11:20:38 +0100
+
 isc-dhcp (4.3.1-6+deb8u2pexip2) pexip; urgency=low
 
   * debian/isc-dhcp-client.{maintscript, postinst}:
