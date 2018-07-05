@@ -3,7 +3,7 @@
    Lexical scanner for dhcpd config file... */
 
 /*
- * Copyright (c) 2004-2014 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004-2016 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1995-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -147,13 +147,21 @@ save_parse_state(struct parse *cfile) {
 /*
  * Return the parser to the previous saved state.
  *
- * You must call save_parse_state() before calling 
- * restore_parse_state(), but you can call restore_parse_state() any
- * number of times after that.
+ * You must call save_parse_state() every time before calling
+ * restore_parse_state().
+ *
+ * Note: When the read function callback is in use in ldap mode,
+ * a call to get_char() may reallocate the buffer and will append
+ * config data to the buffer until a state restore.
+ * Do not restore to the (freed) pointer and size, but use new one.
  */
 isc_result_t
 restore_parse_state(struct parse *cfile) {
 	struct parse *saved_state;
+#if defined(LDAP_CONFIGURATION)
+	char *inbuf = cfile->inbuf;
+	size_t size = cfile->bufsiz;
+#endif
 
 	if (cfile->saved_state == NULL) {
 		return DHCP_R_NOTYET;
@@ -161,7 +169,13 @@ restore_parse_state(struct parse *cfile) {
 
 	saved_state = cfile->saved_state;
 	memcpy(cfile, saved_state, sizeof(*cfile));
-	cfile->saved_state = saved_state;
+	dfree(saved_state, MDL);
+	cfile->saved_state = NULL;
+
+#if defined(LDAP_CONFIGURATION)
+	cfile->inbuf = inbuf;
+	cfile->bufsiz = size;
+#endif
 	return ISC_R_SUCCESS;
 }
 
@@ -464,7 +478,7 @@ read_whitespace(int c, struct parse *cfile) {
 	 */
 	ofs = 0;
 	do {
-		if (ofs >= sizeof(cfile->tokbuf)) {
+		if (ofs >= (sizeof(cfile->tokbuf) - 1)) {
 			/*
 			 * As the file includes a huge amount of whitespace,
 			 * it's probably broken.
@@ -476,6 +490,8 @@ read_whitespace(int c, struct parse *cfile) {
 		}
 		cfile->tokbuf[ofs++] = c;
 		c = get_char(cfile);
+		if (c == EOF)
+			return END_OF_FILE;
 	} while (!((c == '\n') && cfile->eol_token) && 
 		 isascii(c) && isspace(c));
 
@@ -767,6 +783,8 @@ intern(char *atom, enum dhcp_token dfv) {
 				return ATSFP;
 			break;
 		}
+		if (!strcasecmp(atom + 1, "uthoring-byte-order"))
+			return AUTHORING_BYTE_ORDER;
 		if (!strncasecmp(atom + 1, "ut", 2)) {
 			if (isascii(atom[3]) &&
 			    (tolower((unsigned char)atom[3]) == 'h')) {
@@ -811,6 +829,9 @@ intern(char *atom, enum dhcp_token dfv) {
 			return BALANCE;
 		if (!strcasecmp (atom + 1, "ound"))
 			return BOUND;
+		if (!strcasecmp(atom+1, "ig-endian")) {
+			return TOKEN_BIG_ENDIAN;
+		}
 		break;
 	      case 'c':
 		if (!strcasecmp(atom + 1, "ase"))
@@ -1029,6 +1050,9 @@ intern(char *atom, enum dhcp_token dfv) {
 			return HOSTNAME;
 		if (!strcasecmp (atom + 1, "elp"))
 			return TOKEN_HELP;
+		if (!strcasecmp (atom + 1, "ex")) {
+			return TOKEN_HEX;
+		}
 		break;
 	      case 'i':
 	      	if (!strcasecmp(atom+1, "a-na")) 
@@ -1111,6 +1135,12 @@ intern(char *atom, enum dhcp_token dfv) {
 		}
 		if (!strcasecmp(atom+1, "l")) {
 			return LL;
+		}
+		if (!strcasecmp(atom+1, "ittle-endian")) {
+			return TOKEN_LITTLE_ENDIAN;
+		}
+		if (!strcasecmp (atom + 1, "ease-id-format")) {
+			return LEASE_ID_FORMAT;
 		}
 		break;
 	      case 'm':
@@ -1212,8 +1242,13 @@ intern(char *atom, enum dhcp_token dfv) {
 			return OF;
 		if (!strcasecmp (atom + 1, "wner"))
 			return OWNER;
+		if (!strcasecmp (atom + 1, "ctal")) {
+			return TOKEN_OCTAL;
+		}
 		break;
 	      case 'p':
+		if (!strcasecmp (atom + 1, "arse-vendor-option"))
+			return PARSE_VENDOR_OPT;
 		if (!strcasecmp (atom + 1, "repend"))
 			return PREPEND;
 		if (!strcasecmp(atom + 1, "referred-life"))

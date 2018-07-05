@@ -3,7 +3,7 @@
    Common parser code for dhcpd and dhclient. */
 
 /*
- * Copyright (c) 2004-2014 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004-2016 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1995-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -72,11 +72,18 @@ struct enumeration_value *find_enumeration_value (const char *name,
 }
 
 /* Skip to the semicolon ending the current statement.   If we encounter
-   braces, the matching closing brace terminates the statement.   If we
-   encounter a right brace but haven't encountered a left brace, return
-   leaving the brace in the token buffer for the caller.   If we see a
-   semicolon and haven't seen a left brace, return.   This lets us skip
-   over:
+   braces, the matching closing brace terminates the statement.
+*/
+void skip_to_semi (cfile)
+	struct parse *cfile;
+{
+	skip_to_rbrace(cfile, 0);
+}
+
+/* Skips everything from the current point upto (and including) the given
+ number of right braces.  If we encounter a semicolon but haven't seen a
+ left brace, consume it and return.
+ This lets us skip over:
 
    	statement;
 	statement foo bar { }
@@ -84,13 +91,6 @@ struct enumeration_value *find_enumeration_value (const char *name,
 	statement}
  
 	...et cetera. */
-
-void skip_to_semi (cfile)
-	struct parse *cfile;
-{
-	skip_to_rbrace (cfile, 0);
-}
-
 void skip_to_rbrace (cfile, brace_count)
 	struct parse *cfile;
 	int brace_count;
@@ -98,31 +98,37 @@ void skip_to_rbrace (cfile, brace_count)
 	enum dhcp_token token;
 	const char *val;
 
-#if defined (DEBUG_TOKEN)
-	log_error ("skip_to_rbrace: %d\n", brace_count);
+#if defined (DEBUG_TOKENS)
+	log_error("skip_to_rbrace: %d\n", brace_count);
 #endif
 	do {
-		token = peek_token (&val, (unsigned *)0, cfile);
+		token = peek_token(&val, NULL, cfile);
 		if (token == RBRACE) {
-			skip_token(&val, (unsigned *)0, cfile);
-			if (brace_count) {
-				if (!--brace_count)
-					return;
-			} else
+			if (brace_count > 0) {
+				--brace_count;
+			}
+
+			if (brace_count == 0) {
+				/* Eat the brace and return. */
+				skip_token(&val, NULL, cfile);
 				return;
+			}
 		} else if (token == LBRACE) {
 			brace_count++;
-		} else if (token == SEMI && !brace_count) {
-			skip_token(&val, (unsigned *)0, cfile);
+		} else if (token == SEMI && (brace_count == 0)) {
+			/* Eat the semicolon and return. */
+			skip_token(&val, NULL, cfile);
 			return;
 		} else if (token == EOL) {
 			/* EOL only happens when parsing /etc/resolv.conf,
 			   and we treat it like a semicolon because the
 			   resolv.conf file is line-oriented. */
-			skip_token(&val, (unsigned *)0, cfile);
+			skip_token(&val, NULL, cfile);
 			return;
 		}
-		token = next_token (&val, (unsigned *)0, cfile);
+
+		/* Eat the current token */
+		token = next_token(&val, NULL, cfile);
 	} while (token != END_OF_FILE);
 }
 
@@ -378,10 +384,11 @@ parse_ip6_addr(struct parse *cfile, struct iaddr *addr) {
 	 */
 	v6_len = 0;
 	for (;;) {
-		if ((((token == NAME) || (token == NUMBER_OR_NAME)) && 
+		if ((((token == NAME) || (token == NUMBER_OR_NAME)) &&
 		     is_hex_string(val)) ||
-		    (token == NUMBER) || 
-		    (token == DOT) || 
+		    (token == NUMBER) ||
+		    (token == TOKEN_ADD) ||
+		    (token == DOT) ||
 		    (token == COLON)) {
 
 			next_raw_token(&val, NULL, cfile);
@@ -1101,6 +1108,13 @@ parse_date_core(cfile)
 			   "Time zone offset or semicolon expected.");
 		return((TIME)0);
 	}
+
+	/* If the year is 2038 or greater return the max time to avoid
+	 * overflow issues.  We could try and be more precise but there
+	 * doesn't seem to be a good reason to worry about it and waste
+	 * the cpu looking at the rest of the date. */
+	if (year >= 138)
+		return(MAX_TIME);
 
 	/* Guess the time value... */
 	guess = ((((((365 * (year - 70) +	/* Days in years since '70 */
@@ -2624,6 +2638,22 @@ int parse_executable_statement (result, cfile, lose, case_context)
 			*lose = 1;
 			return 0;
 		}
+		break;
+
+	      case PARSE_VENDOR_OPT:
+		/* The parse-vendor-option; The statement has no arguments.
+		 * We simply set up the statement and when it gets executed it
+		 * will find all information it needs in the packet and options.
+		 */
+		skip_token(&val, NULL, cfile);
+		if (!parse_semi(cfile)) {
+			*lose = 1;
+			return (0);
+		}
+
+		if (!executable_statement_allocate(result, MDL))
+			log_fatal("no memory for execute statement.");
+		(*result)->op = vendor_opt_statement;
 		break;
 
 		/* Not really a statement, but we parse it here anyway
@@ -4731,14 +4761,6 @@ int parse_expression (expr, cfile, lose, context, plhs, binop)
 	lhs = tmp;
 	tmp = (struct expression *)0;
 	rhs = (struct expression *)0;
-
-	/* Recursions don't return until we have parsed the end of the
-	   expression, so if we recursed earlier, we can now return what
-	   we got. */
-	if (next_op == expr_none) {
-		*expr = lhs;
-		return 1;
-	}
 
 	binop = next_op;
 	goto new_rhs;

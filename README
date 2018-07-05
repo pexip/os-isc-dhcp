@@ -1,6 +1,6 @@
 	      Internet Systems Consortium DHCP Distribution
-			      Version 4.3.1
-			      11 August 2014
+			     Version 4.3.5
+			     5 October 2016
 
 			      README FILE
 
@@ -38,6 +38,7 @@ the ISC DHCP Distribution.
 	  5.8.3 Other Solaris Items
 	 5.9	 AIX
 	 5.10	 MacOS X
+         5.11    ATF
 	6	SUPPORT
 	 6.1	 HOW TO REPORT BUGS
 	7	HISTORY
@@ -141,12 +142,12 @@ information.   On Digital Unix, type ``man pfilt''.
 To build the DHCP Distribution, unpack the compressed tar file using
 the tar utility and the gzip command - type something like:
 
-	gunzip dhcp-4.3.1.tar.gz
-	tar xvf dhcp-4.3.1.tar
+	gunzip dhcp-4.3.5.tar.gz
+	tar xvf dhcp-4.3.5.tar
 
 			    CONFIGURING IT
 
-Now, cd to the dhcp-4.3.1 subdirectory that you've just created and
+Now, cd to the dhcp-4.3.5 subdirectory that you've just created and
 configure the source tree by typing:
 
 	./configure
@@ -197,6 +198,10 @@ as we can manage, but there are a few for which this is difficult.
 If you get errors on a system not mentioned above, you will need
 to do some programming or debugging on your own to get the DHCP
 Distribution working.
+
+If you cross compile you have to follow the instructions from
+the BIND README, in particular you must set the BUILD_CC
+environment variable.
 
 		   INSTALLING THE DHCP DISTRIBUTION
 
@@ -252,7 +257,7 @@ and the "protocol not configured" problem.
 		    LINUX: PROTOCOL NOT CONFIGURED
 
 If you get the following message, it's because your kernel doesn't
-have the linux packetfilter or raw packet socket configured:
+have the Linux packetfilter or raw packet socket configured:
 
  Make sure CONFIG_PACKET (Packet socket) and CONFIG_FILTER (Socket
  Filtering) are enabled in your kernel configuration
@@ -585,6 +590,18 @@ recomputed from scratch when the current location/set is changed.
 Running the dhclient-script reinstalls the resolv.conf.dhclient6
 configuration.
 
+
+			       ATF
+
+Please see the file DHCP/doc/devel/atf.dox for a description of building
+and using these tools.  
+
+The optional unit tests use ATF (Automated Testing Framework) including
+the atf-run and atf-report tools. ATF deprecated these tools in
+version 0.19 and removed these tools from its sources in version 0.20,
+requiring you to get an older version, use Kyua with an ATF compatibility
+package or use the version included in the Bind sources.
+
 			       SUPPORT
 
 The Internet Systems Consortium DHCP server is developed and distributed
@@ -672,7 +689,7 @@ bug reports are more likely to get handled more quickly overall.
 	  something about your situation that we don't know.
       6.  Include your dhcpd.conf and dhcpd.leases file as MIME attachments
 	  if they're not over 100 kilobytes in size each.  If they are
-	  this large, please make them available to us eg via a hidden
+	  this large, please make them available to us, e.g., via a hidden
 	  http:// URL or FTP site.  If you're not comfortable releasing
 	  this information due to sensitive contents, you may encrypt
 	  the file to our release signing key, available on our website.
