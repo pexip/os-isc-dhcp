@@ -4,7 +4,7 @@
 
 /*
  * 
- * Copyright (c) 2009-2014 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2009-2016 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 2004-2007 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 2000-2003 by Internet Software Consortium
  *
@@ -30,12 +30,10 @@
  * by Damien Neil of Nominum, Inc.
  *
  * To learn more about Internet Systems Consortium, see
- * ``https://www.isc.org/''.   To learn more about Nominum, Inc., see
- * ``http://www.nominum.com''.
+ * ``https://www.isc.org/''.
  */
 
 #include "dhcpd.h"
-#include "dst/md5.h"
 #include <dns/result.h>
 
 char *ddns_standard_tag = "ddns-dhcid";
@@ -221,6 +219,22 @@ ddns_updates(struct packet *packet, struct lease *lease, struct lease *old,
 	else
 		s1 = 0;
 
+	/* If we don't have a host name based on ddns-hostname then use
+	 * the host declaration name if there is one and use-host-decl-names
+	 * is turned on. */
+	if ((s1 == 0) && (lease && lease->host && lease->host->name)) {
+		oc = lookup_option(&server_universe, options,
+				   SV_USE_HOST_DECL_NAMES);
+		if (evaluate_boolean_option_cache(NULL, packet, lease,
+						  NULL, packet->options,
+						  options, scope, oc, MDL)) {
+			s1 = ((data_string_new(&ddns_hostname,
+					      lease->host->name,
+					      strlen(lease->host->name),
+                                              MDL) && ddns_hostname.len > 0));
+		}
+	}
+
 	oc = lookup_option(&server_universe, options, SV_DDNS_DOMAIN_NAME);
 	if (oc)
 		s2 = evaluate_option_cache(&ddns_domainname, packet, lease,
@@ -236,10 +250,9 @@ ddns_updates(struct packet *packet, struct lease *lease, struct lease *old,
 			goto out;
 		}
 
-		buffer_allocate (&ddns_fwd_name.buffer,
-				 ddns_hostname.len + ddns_domainname.len + 2,
-				 MDL);
-		if (ddns_fwd_name.buffer) {
+		if (buffer_allocate (&ddns_fwd_name.buffer,
+				     ddns_hostname.len +
+				     ddns_domainname.len + 2, MDL)) {
 			ddns_fwd_name.data = ddns_fwd_name.buffer->data;
 			data_string_append (&ddns_fwd_name, &ddns_hostname);
 			ddns_fwd_name.buffer->data[ddns_fwd_name.len] = '.';
@@ -438,8 +451,8 @@ ddns_updates(struct packet *packet, struct lease *lease, struct lease *old,
 	}
 
 	if (s1) {
-		buffer_allocate(&ddns_cb->rev_name.buffer, rev_name_len, MDL);
-		if (ddns_cb->rev_name.buffer != NULL) {
+		if (buffer_allocate(&ddns_cb->rev_name.buffer,
+				    rev_name_len, MDL)) {
 			struct data_string *rname = &ddns_cb->rev_name;
 			rname->data = rname->buffer->data;
 
@@ -1135,8 +1148,7 @@ ddns_update_lease_ptr(struct lease    *lease,
 		return (ISC_R_FAILURE);
 	}
 	else {
-		strncpy(ddns_address, piaddr(ddns_cb->address), 
-			MAX_ADDRESS_STRING_LEN);
+		strcpy(ddns_address, piaddr(ddns_cb->address));
 	}
 #if defined (DEBUG_DNS_UPDATES)
 	log_info("%s(%d): Updating lease_ptr for ddns_cp=%p (addr=%s)",
@@ -1333,6 +1345,12 @@ ddns_ptr_remove(dhcp_ddns_cb_t *ddns_cb,
 			  isc_result_totext (eresult));
 		break;
 	}
+
+	/* If we aren't suppossed to do the next step, set the result
+	 * flag so ddns_fwd_srv_connector won't do much
+	 */
+	if ((ddns_cb->flags & DDNS_EXECUTE_NEXT) == 0)
+		result = ISC_R_FAILURE;
 
 	ddns_update_lease_ptr(NULL, NULL, ddns_cb, NULL, MDL);
 	ddns_fwd_srv_connector(NULL, NULL, NULL, ddns_cb->next_op, result);
@@ -1574,23 +1592,42 @@ void
 ddns_fwd_srv_rem2(dhcp_ddns_cb_t *ddns_cb,
 		  isc_result_t    eresult)
 {
-	if (eresult == ISC_R_SUCCESS) {
+
+	/*
+	 * To get here we have already managed to remove the A/AAAA
+	 * record and are trying to remove the DHCID/TXT record as well.
+	 * On success (removed DHCID/TXT) or YXRRSET (DHCID/TXT still in
+	 * use by something else) we clean up the lease.
+	 * On some other error we don't clean up the lease and hope that
+	 * if we try this again it will work.  An example would be if we
+	 * got a timeout as the DNS server halted between the first and
+	 * second steps.  The DNS server would still have the DHCID/TXT
+	 * and we would like to remove that in the future.
+	 *
+	 * On success set the EXECUTE_NEXT flag which triggers any
+	 * add that is next in the chain.
+	 */
+	if ((eresult == ISC_R_SUCCESS) ||
+	    (eresult == DNS_R_YXRRSET))  {
 		ddns_update_lease_text(ddns_cb, NULL);
+		eresult = ISC_R_SUCCESS;
+	}
 
-		/* Do the next operation */
-		if ((ddns_cb->flags & DDNS_UPDATE_PTR) != 0) {
-			/* if we have zone information get rid of it */
-			if (ddns_cb->zone != NULL) {
-				ddns_cb_forget_zone(ddns_cb);
-			}
+	/* Do the next operation */
+	if ((ddns_cb->flags & DDNS_UPDATE_PTR) != 0) {
+		/* if we have zone information get rid of it */
+		if (ddns_cb->zone != NULL) {
+			ddns_cb_forget_zone(ddns_cb);
+		}
 
-			ddns_cb->state = DDNS_STATE_REM_PTR;
-			ddns_cb->cur_func = ddns_ptr_remove;
-			
-			eresult = ddns_modify_ptr(ddns_cb, MDL);
-			if (eresult == ISC_R_SUCCESS) {
-				return;
-			}
+		ddns_cb->state = DDNS_STATE_REM_PTR;
+		ddns_cb->cur_func = ddns_ptr_remove;
+		if (eresult == ISC_R_SUCCESS)
+			ddns_cb->flags |= DDNS_EXECUTE_NEXT;
+
+		eresult = ddns_modify_ptr(ddns_cb, MDL);
+		if (eresult == ISC_R_SUCCESS) {
+			return;
 		}
 	}
 
@@ -1641,7 +1678,20 @@ ddns_fwd_srv_rem1(dhcp_ddns_cb_t *ddns_cb,
 		log_info("DDNS: no forward map to remove. %p", ddns_cb);
 #endif
 
-		/* Do the next operation */
+		/* Trigger the add operation */
+		eresult = ISC_R_SUCCESS;
+
+		/* Fall through */
+	default:
+
+		/* We do the remove operation in most cases
+		 * but we don't want to continue with adding a forward
+		 * record if the forward removal had issues so we
+		 * check the eresult and set the EXECUTE_NEXT flag on
+		 * success.
+		 */
+
+		/* Do the remove operation */
 		if ((ddns_cb->flags & DDNS_UPDATE_PTR) != 0) {
 			/* if we have zone information get rid of it */
 			if (ddns_cb->zone != NULL) {
@@ -1650,19 +1700,14 @@ ddns_fwd_srv_rem1(dhcp_ddns_cb_t *ddns_cb,
 
 			ddns_cb->state    = DDNS_STATE_REM_PTR;
 			ddns_cb->cur_func = ddns_ptr_remove;
-			
+			if (eresult == ISC_R_SUCCESS)
+				ddns_cb->flags |= DDNS_EXECUTE_NEXT;
+
 			result = ddns_modify_ptr(ddns_cb, MDL);
 			if (result == ISC_R_SUCCESS) {
 				return;
 			}
 		}
-		else {
-			/* Trigger the add operation */
-			eresult = ISC_R_SUCCESS;
-		}
-		break;
-			
-	default:
 		break;
 	}
 
@@ -1943,6 +1988,7 @@ ddns_removals(struct lease    *lease,
 	if ((ddns_cb->flags & DDNS_UPDATE_PTR) != 0) {
 		ddns_cb->state      = DDNS_STATE_REM_PTR;
 		ddns_cb->cur_func   = ddns_ptr_remove;
+		ddns_cb->flags      |= DDNS_EXECUTE_NEXT;
 
 		/*
 		 * if execute add isn't success remove the control block so

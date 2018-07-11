@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007,2009,2012 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2007-2016 by Internet Systems Consortium, Inc. ("ISC")
  *
  * We test the functions provided in alloc.c here. These are very
  * basic functions, and it is very important that they work correctly.
@@ -26,6 +26,9 @@
 #include "config.h"
 #include <atf-c.h>
 #include "dhcpd.h"
+#include "omapip/alloc.h"
+
+static const char* checkString (struct data_string* ds, const char *src);
 
 ATF_TC(buffer_allocate);
 
@@ -187,7 +190,7 @@ ATF_TC_BODY(buffer_dereference, tc) {
     if (!buffer_reference(&b, a, MDL)) {
         atf_tc_fail("buffer_reference() failed");
     }
-    a->refcnt = 0;	/* purposely set to invalid value */
+    a->refcnt = 0;    /* purposely set to invalid value */
     if (buffer_dereference(&a, MDL)) {
         atf_tc_fail("buffer_dereference() succeeded on error input");
     }
@@ -387,6 +390,240 @@ ATF_TC_BODY(data_string_copy_nobuf, tc) {
 
 }
 
+
+ATF_TC(data_string_new);
+
+ATF_TC_HEAD(data_string_new, tc) {
+    atf_tc_set_md_var(tc, "descr", "data_string_new test, "
+                      "exercises data_string_new function");
+}
+
+ATF_TC_BODY(data_string_new, tc) {
+    struct data_string new_string;
+    const char *src = "Really? Latin? ... geeks";
+    int len_arg = 0;
+    const char *error;
+
+    /* Case 1: Call with an invalid data_string pointer, should fail */
+    if (data_string_new(NULL, src, len_arg, MDL)) {
+        atf_tc_fail("case 1: call should have failed");
+    }
+
+    /* Case 2: Passing in NULL src should fail */
+    if (data_string_new(&new_string, NULL, 10, MDL)) {
+        atf_tc_fail("case 2: did not return success");
+    }
+
+    /* Case 3: Call with valid params, length includes NULL */
+    len_arg = strlen(src) + 1;
+    if (data_string_new(&new_string, src, len_arg, MDL) == 0) {
+        atf_tc_fail("case 3: did not return success");
+    }
+
+    error = checkString(&new_string, src);
+    ATF_REQUIRE_MSG((error == NULL), "case 3: %s", error);
+    data_string_forget(&new_string, MDL);
+
+
+    /* Case 4: Call with valid params, length does not include NULL */
+    len_arg = 7;
+    if (data_string_new(&new_string, src, len_arg, MDL) == 0) {
+        atf_tc_fail("case 4: did not return success");
+    }
+
+    error = checkString(&new_string, "Really?");
+    ATF_REQUIRE_MSG((error == NULL), "case 4: %s", error);
+    data_string_forget(&new_string, MDL);
+
+
+    /* Case 5: Call with valid params, source string is "" */
+    len_arg = 0;
+    if (data_string_new(&new_string, "", len_arg, MDL) == 0) {
+        atf_tc_fail("case 5: did not return success");
+    }
+
+    error = checkString(&new_string, "");
+    ATF_REQUIRE_MSG((error == NULL), "case 4: %s", error);
+    data_string_forget(&new_string, MDL);
+
+
+}
+
+/* Helper function which tests validity of a data_string
+*
+* Verifies that the given data_string contains a null-terminated string
+* equal to a given string.
+*
+* \param string data_string to test
+* \param src text content string should contain
+* \return returns NULL if data_string is validate or an error message
+* describing why it is invalid
+*/
+const char* checkString (struct data_string* string,
+    const char* src) {
+    int src_len = strlen(src);
+
+    if (string->buffer == NULL) {
+        return ("buffer is NULL");
+    }
+
+    if (string->data != string->buffer->data) {
+        return ("data not set to buffer->data");
+    }
+
+    if (string->len != src_len) {
+        return ("len is wrong ");
+    }
+
+    if (string->terminated != 1)  {
+        return ("terminated flag not set");
+    }
+
+    if (memcmp(string->data, src, src_len + 1)) {
+        return ("data content wrong");
+    }
+
+    return (NULL);
+}
+
+ATF_TC(data_string_terminate);
+
+ATF_TC_HEAD(data_string_terminate, tc) {
+    atf_tc_set_md_var(tc, "descr", "data_string_terminate test, "
+                      "exercises data_string_terminate function");
+}
+
+ATF_TC_BODY(data_string_terminate, tc) {
+    struct data_string new_string, copy_string;
+    const char *src = "Boring test string";
+
+    /* Case 1: Call with an already terminated string.  The
+     * original structure shouldn't be touched.
+     */
+    memset(&new_string, 0, sizeof(new_string));
+    memset(&copy_string, 0, sizeof(copy_string));
+    if (data_string_new(&new_string, src, strlen(src), MDL) == 0) {
+	atf_tc_fail("Case 1: unable to create new string");
+    }
+    memcpy(&copy_string, &new_string, sizeof(new_string));
+    if (data_string_terminate(&new_string, MDL) == 0) {
+	atf_tc_fail("Case 1: unable to terminate string");
+    }
+    if (memcmp(&copy_string, &new_string, sizeof(new_string)) != 0) {
+	atf_tc_fail("Case 1: structure modified");
+    }
+
+    /* Case 2: Call with an unterminated string.  The
+     * original structure should be modified with a pointer
+     * to new memory for the string.
+     */
+    /* clear the termination flag, and shrink the string */
+    new_string.terminated = 0;
+    new_string.len -= 2;
+    memcpy(&copy_string, &new_string, sizeof(new_string));
+
+    if (data_string_terminate(&new_string, MDL) == 0) {
+	atf_tc_fail("Case 2: unable to terminate string");
+    }
+
+    /* We expect the same string but in a differnet block of memory */
+    if ((new_string.terminated == 0) ||
+	(&new_string.buffer == &copy_string.buffer) ||
+	(new_string.len != copy_string.len) ||
+	memcmp(new_string.data, src, new_string.len) ||
+	new_string.data[new_string.len] != 0) {
+	atf_tc_fail("Case 2: structure not modified correctly");
+    }
+
+    /* get rid of the string, no need to get rid of copy as the
+     * string memory was freed during the terminate call */
+    data_string_forget(&new_string, MDL);
+}
+
+void checkBuffer(size_t test_size, const char *file, int line) {
+    char *buf;
+    size_t max_size;
+    /* Determine the maximum size we may have
+     * Depending on configuration options we may be adding some
+     * space to the allocated buffer for debugging purposes
+     * so remove that as well.
+     */
+    max_size = ((size_t)-1) - DMDSIZE;
+
+    if (test_size > max_size) {
+	atf_tc_skip("Test size greater than max size, %zu", test_size);
+	return;
+    }
+
+    /* We allocate the buffer and then try to set the last character
+     * to a known value.
+     */
+    buf = dmalloc(test_size, file, line);
+    if (buf != NULL) {
+	buf[test_size - 1] = 1;
+	if (buf[test_size - 1] != 1)
+	    atf_tc_fail("Value mismatch for index %zu", test_size);
+	dfree(buf, file, line);
+    } else {
+	atf_tc_skip("Unable to allocate memory %zu", test_size);
+    }
+}
+
+#if 0
+/* The max test presents some issues for some systems,
+ * leave it out for now
+ */
+ATF_TC(dmalloc_max32);
+
+ATF_TC_HEAD(dmalloc_max32, tc) {
+    atf_tc_set_md_var(tc, "descr", "dmalloc_max32 test, "
+		      "dmalloc 0xFFFFFFFF");
+}
+ATF_TC_BODY(dmalloc_max32, tc) {
+    checkBuffer(0XFFFFFFFF, MDL);
+}
+#endif
+
+ATF_TC(dmalloc_med1);
+
+ATF_TC_HEAD(dmalloc_med1, tc) {
+    atf_tc_set_md_var(tc, "descr", "dmalloc_med1 test, "
+		      "dmalloc 0x80000000,");
+}
+ATF_TC_BODY(dmalloc_med1, tc) {
+    checkBuffer(0x80000000, MDL);
+}
+
+ATF_TC(dmalloc_med2);
+
+ATF_TC_HEAD(dmalloc_med2, tc) {
+    atf_tc_set_md_var(tc, "descr", "dmalloc_med2 test, "
+		      "dmalloc 0x7FFFFFFF, ");
+}
+ATF_TC_BODY(dmalloc_med2, tc) {
+    checkBuffer(0x7FFFFFFF,  MDL);
+}
+
+ATF_TC(dmalloc_med3);
+
+ATF_TC_HEAD(dmalloc_med3, tc) {
+    atf_tc_set_md_var(tc, "descr", "dmalloc_med3 test, "
+		      "dmalloc 0x10000000,");
+}
+ATF_TC_BODY(dmalloc_med3, tc) {
+    checkBuffer(0x10000000, MDL);
+}
+
+ATF_TC(dmalloc_small);
+
+ATF_TC_HEAD(dmalloc_small, tc) {
+    atf_tc_set_md_var(tc, "descr", "dmalloc_small test, "
+		      "dmalloc 0x0FFFFFFF");
+}
+ATF_TC_BODY(dmalloc_small, tc) {
+    checkBuffer(0X0FFFFFFF, MDL);
+}
+
 ATF_TP_ADD_TCS(tp)
 {
     ATF_TP_ADD_TC(tp, buffer_allocate);
@@ -396,6 +633,15 @@ ATF_TP_ADD_TCS(tp)
     ATF_TP_ADD_TC(tp, data_string_forget_nobuf);
     ATF_TP_ADD_TC(tp, data_string_copy);
     ATF_TP_ADD_TC(tp, data_string_copy_nobuf);
+    ATF_TP_ADD_TC(tp, data_string_new);
+    ATF_TP_ADD_TC(tp, data_string_terminate);
+#if 0
+    ATF_TP_ADD_TC(tp, dmalloc_max32);
+#endif
+    ATF_TP_ADD_TC(tp, dmalloc_med1);
+    ATF_TP_ADD_TC(tp, dmalloc_med2);
+    ATF_TP_ADD_TC(tp, dmalloc_med3);
+    ATF_TP_ADD_TC(tp, dmalloc_small);
 
     return (atf_no_error());
 }

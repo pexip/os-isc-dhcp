@@ -3,7 +3,7 @@
    Tables of information only used by server... */
 
 /*
- * Copyright (c) 2004-2011,2013-2014 by Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (c) 2004-2016 by Internet Systems Consortium, Inc. ("ISC")
  * Copyright (c) 1995-2003 by Internet Software Consortium
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -234,7 +234,7 @@ static struct option server_options[] = {
 	{ "limit-addrs-per-ia", "L",		&server_universe,  56, 1 },
 	{ "limit-prefs-per-ia", "L",		&server_universe,  57, 1 },
 /* Assert a configuration parsing error if delayed-ack isn't compiled in. */
-#if defined(DELAYED_ACK)
+#if defined(DELAYED_ACK) && !defined(DHCP4o6)
 	{ "delayed-ack", "S",			&server_universe,  58, 1 },
 	{ "max-ack-delay", "L",			&server_universe,  59, 1 },
 #endif
@@ -258,7 +258,12 @@ static struct option server_options[] = {
 	{ "ldap-tls-crlcheck", "Nldap-tls-crlcheck.",	&server_universe,  75, 1 },
 	{ "ldap-tls-ciphers", "t",		&server_universe,  76, 1 },
 	{ "ldap-tls-randfile", "t",		&server_universe,  77, 1 },
+	{ "ldap-init-retry", "d",       	&server_universe,  SV_LDAP_INIT_RETRY, 1 },
 #endif /* LDAP_USE_SSL */
+#if defined(LDAP_USE_GSSAPI)
+	{ "ldap-gssapi-keytab", "t",        &server_universe,  SV_LDAP_GSSAPI_KEYTAB, 1},
+	{ "ldap-gssapi-principal", "t",     &server_universe,  SV_LDAP_GSSAPI_PRINCIPAL, 1},
+#endif /* LDAP_USE_GSSAPI */
 #endif /* LDAP_CONFIGURATION */
 	{ "dhcp-cache-threshold", "B",		&server_universe,  78, 1 },
 	{ "dont-use-fsync", "f",		&server_universe,  79, 1 },
@@ -267,6 +272,11 @@ static struct option server_options[] = {
 	{ "ignore-client-uids", "f",		&server_universe,  82, 1 },
 	{ "log-threshold-low", "B",		&server_universe,  83, 1 },
 	{ "log-threshold-high", "B",		&server_universe,  84, 1 },
+	{ "echo-client-id", "f",		&server_universe,  SV_ECHO_CLIENT_ID, 1 },
+	{ "server-id-check", "f",		&server_universe,  SV_SERVER_ID_CHECK, 1 },
+	{ "prefix-length-mode", "Nprefix_length_modes.",	&server_universe,  SV_PREFIX_LEN_MODE, 1 },
+	{ "dhcpv6-set-tee-times", "f",		&server_universe,  SV_DHCPV6_SET_TEE_TIMES, 1 },
+	{ "abandon-lease-time", "T",		&server_universe,  SV_ABANDON_LEASE_TIME, 1 },
 	{ NULL, NULL, NULL, 0, 0 }
 };
 
@@ -338,6 +348,21 @@ struct enumeration ddns_styles = {
 	(struct enumeration *)0,
 	"ddns-styles", 1,
 	ddns_styles_values
+};
+
+struct enumeration_value prefix_length_modes_values[] = {
+        { "ignore", PLM_IGNORE },
+        { "prefer", PLM_PREFER },
+        { "exact", PLM_EXACT },
+        { "minimum", PLM_MINIMUM },
+        { "maximum", PLM_MAXIMUM },
+        { (char *)0, 0 }
+};
+
+struct enumeration prefix_length_modes = {
+        (struct enumeration *)0,
+        "prefix_length_modes", 1,
+        prefix_length_modes_values
 };
 
 struct enumeration_value syslog_values [] = {
