@@ -14,7 +14,7 @@ Build-Depends:
  groff,
  pkg-config,
  po-debconf,
- libssl-dev,
+ libssl1.0-dev | libssl-dev (<< 1.1),
  libldap2-dev,
  libbind-export-dev (>= 1:9.10.3.dfsg.P4-2),
 Standards-Version: 3.9.8
