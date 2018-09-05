@@ -9,7 +9,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  		   scripts/solaris scripts/openwrt
 -dhclient_LDADD = ../common/libdhcp.a ../omapip/libomapi.a $(BINDLIBDIR)/libirs.a \
 -		 $(BINDLIBDIR)/libdns.a $(BINDLIBDIR)/libisccfg.a $(BINDLIBDIR)/libisc.a
-+dhclient_LDADD = ../common/libdhcp.a ../omapip/libomapi.a -ldns-export -lisc-export
++dhclient_LDADD = ../common/libdhcp.a ../omapip/libomapi.a -lirs-export -ldns-export -lisc-export
  man_MANS = dhclient.8 dhclient-script.8 dhclient.conf.5 dhclient.leases.5
  EXTRA_DIST = $(man_MANS)
 --- a/dhcpctl/Makefile.am
@@ -20,7 +20,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  omshell_LDADD = libdhcpctl.a ../common/libdhcp.a ../omapip/libomapi.a \
 -	        $(BINDLIBDIR)/libirs.a $(BINDLIBDIR)/libdns.a \
 -	        $(BINDLIBDIR)/libisccfg.a $(BINDLIBDIR)/libisc.a
-+	        -ldns-export -lisc-export
++	        -lirs-export -ldns-export -lisc-export
  
  libdhcpctl_a_SOURCES = dhcpctl.c callback.c remote.c
  
@@ -47,7 +47,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  dhcrelay_LDADD = ../common/libdhcp.a ../omapip/libomapi.a \
 -		 $(BINDLIBDIR)/libirs.a $(BINDLIBDIR)/libdns.a \
 -		 $(BINDLIBDIR)/libisccfg.a $(BINDLIBDIR)/libisc.a
-+		 -ldns-export -lisc-export
++		 -lirs-export -ldns-export -lisc-export
  man_MANS = dhcrelay.8
  EXTRA_DIST = $(man_MANS)
  
@@ -60,7 +60,7 @@ author: Michael Gilbert <mgilbert@debian.org>
 -	      ../dhcpctl/libdhcpctl.a $(BINDLIBDIR)/libirs.a \
 -	      $(BINDLIBDIR)/libdns.a $(BINDLIBDIR)/libisccfg.a \
 -	      $(BINDLIBDIR)/libisc.a $(LDAP_LIBS)
-+	      ../dhcpctl/libdhcpctl.a -ldns-export -lisc-export $(LDAP_LIBS)
++	      ../dhcpctl/libdhcpctl.a -lirs-export -ldns-export -lisc-export $(LDAP_LIBS)
  
  man_MANS = dhcpd.8 dhcpd.conf.5 dhcpd.leases.5
  EXTRA_DIST = $(man_MANS)
