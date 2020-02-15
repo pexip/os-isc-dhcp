@@ -18,7 +18,7 @@ Build-Depends:
  libldap2-dev,
  libbind-export-dev (>= 1:9.10.3.dfsg.P4-2),
 Standards-Version: 3.9.8
-XS-Pexip-Upstream: http://ftp.debian.org/debian/ stretch
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ buster
 
 Package: isc-dhcp-server
 Priority: optional
