@@ -2,10 +2,8 @@ Source: isc-dhcp
 Section: net
 Priority: important
 Maintainer: Pexip AS <packaging@pexip.com>
-XSBC-Pexip-Original-Maintainer: Debian ISC DHCP maintainers <pkg-dhcp-devel@lists.alioth.debian.org>
+XSBC-Pexip-Original-Maintainer: Debian ISC DHCP Maintainers <isc-dhcp@packages.debian.org>
 XSBC-Pexip-Original-Uploaders: Andrew Pollock <apollock@debian.org>, Michael Gilbert <mgilbert@debian.org>
-Vcs-Git: https://anonscm.debian.org/pkg-dhcp/isc-dhcp.git
-Vcs-Browser: https://anonscm.debian.org/gitweb/?p=pkg-dhcp/isc-dhcp.git;a=summary
 Homepage: http://www.isc.org
 Build-Depends:
  dpkg-dev (>= 1.13.2),
@@ -14,10 +12,11 @@ Build-Depends:
  groff,
  pkg-config,
  po-debconf,
- libssl1.0-dev | libssl-dev (<< 1.1),
  libldap2-dev,
- libbind-export-dev (>= 1:9.10.3.dfsg.P4-2),
+ libbind-export-dev (>= 1:9.11.5),
 Standards-Version: 3.9.8
+Vcs-Git: https://salsa.debian.org/dhcp-team/isc-dhcp.git
+Vcs-Browser: https://salsa.debian.org/dhcp-team/isc-dhcp
 XS-Pexip-Upstream: http://ftp.debian.org/debian/ buster
 
 Package: isc-dhcp-server
@@ -145,7 +144,7 @@ Description: Dynamic DNS (DDNS) enabled DHCP client
  Extra documentation can be found in the package isc-dhcp-common.
 
 Package: isc-dhcp-client-udeb
-Priority: extra
+Priority: important
 Architecture: any
 Section: debian-installer
 Depends:
