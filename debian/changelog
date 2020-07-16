@@ -1,3 +1,9 @@
+isc-dhcp (4.4.1-2pexip2) pexip; urgency=medium
+
+  * Rebuild in buster environment
+
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Thu, 16 Jul 2020 00:03:19 +0000
+
 isc-dhcp (4.4.1-2pexip1) pexip; urgency=medium
 
   * Migrate to Buster
