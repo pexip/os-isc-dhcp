@@ -16,5 +16,6 @@ system-bind.patch
 bind-includes.patch
 
 configure.patch
+Fixed_gcc_10_compilation_issues.patch
 
 4.4.2.CVE-2021-25217.patch
