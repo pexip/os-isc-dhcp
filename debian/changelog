@@ -1,3 +1,12 @@
+isc-dhcp (4.4.1-2+deb10u1) buster; urgency=medium
+
+  * Non-maintainer upload.
+  * A buffer overrun in lease file parsing code can be used to exploit a
+    common vulnerability shared by dhcpd and dhclient (CVE-2021-25217)
+    (Closes: #989157)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Thu, 03 Jun 2021 12:59:09 +0200
+
 isc-dhcp (4.4.1-2) unstable; urgency=medium
 
   * Set initial address to 0.0.0.0 on hurd (closes: #875566).
