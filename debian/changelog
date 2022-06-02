@@ -1,3 +1,9 @@
+isc-dhcp (4.4.1-2.3pexip1) pexip; urgency=medium
+
+  * Initial bullseye build
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Thu, 02 Jun 2022 14:42:20 +0100
+
 isc-dhcp (4.4.1-2.3) unstable; urgency=high
 
   * Non-maintainer upload.
