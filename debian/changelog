@@ -1,3 +1,11 @@
+isc-dhcp (4.4.1-2.3+deb11u1) bullseye-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * An option refcount overflow exists in dhcpd (CVE-2022-2928)
+  * DHCP memory leak (CVE-2022-2929)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Tue, 04 Oct 2022 22:52:25 +0200
+
 isc-dhcp (4.4.1-2.3) unstable; urgency=high
 
   * Non-maintainer upload.
