@@ -1,2 +1,3 @@
 README
 debian/tmp/changelog
+debian/tmp/usr/etc/dhcpd.conf.example

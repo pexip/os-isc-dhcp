@@ -1,8 +1,10 @@
 description: link against system bind libraries
 author: Michael Gilbert <mgilbert@debian.org>
 
---- a/client/Makefile.am
-+++ b/client/Makefile.am
+Index: isc-dhcp/client/Makefile.am
+===================================================================
+--- isc-dhcp.orig/client/Makefile.am
++++ isc-dhcp/client/Makefile.am
 @@ -14,9 +14,7 @@ dhclient_SOURCES = client_tables.c clpar
  		   scripts/netbsd scripts/nextstep scripts/openbsd \
  		   scripts/solaris scripts/openwrt
@@ -15,8 +17,10 @@ author: Michael Gilbert <mgilbert@debian.org>
 +                 -lisc-export
  man_MANS = dhclient.8 dhclient-script.8 dhclient.conf.5 dhclient.leases.5
  EXTRA_DIST = $(man_MANS)
---- a/dhcpctl/Makefile.am
-+++ b/dhcpctl/Makefile.am
+Index: isc-dhcp/dhcpctl/Makefile.am
+===================================================================
+--- isc-dhcp.orig/dhcpctl/Makefile.am
++++ isc-dhcp/dhcpctl/Makefile.am
 @@ -11,16 +11,12 @@ EXTRA_DIST = $(man_MANS)
  
  omshell_SOURCES = omshell.c
@@ -38,8 +42,10 @@ author: Michael Gilbert <mgilbert@debian.org>
 -	       $(BINDLIBISCDIR)/libisc.a
 +	       -ldns-export \
 +	       -lisc-export
---- a/omapip/Makefile.am
-+++ b/omapip/Makefile.am
+Index: isc-dhcp/omapip/Makefile.am
+===================================================================
+--- isc-dhcp.orig/omapip/Makefile.am
++++ isc-dhcp/omapip/Makefile.am
 @@ -16,7 +16,5 @@ EXTRA_DIST = $(man_MANS)
  
  svtest_SOURCES = test.c
@@ -50,9 +56,11 @@ author: Michael Gilbert <mgilbert@debian.org>
 -	       $(BINDLIBISCDIR)/libisc.a
 +	       -ldns-export \
 +	       -lisc-export
---- a/relay/Makefile.am
-+++ b/relay/Makefile.am
-@@ -3,10 +3,8 @@ AM_CPPFLAGS = -DLOCALSTATEDIR='"@localst
+Index: isc-dhcp/relay/Makefile.am
+===================================================================
+--- isc-dhcp.orig/relay/Makefile.am
++++ isc-dhcp/relay/Makefile.am
+@@ -5,9 +5,7 @@ AM_CPPFLAGS = -DLOCALSTATEDIR='"@localst
  sbin_PROGRAMS = dhcrelay
  dhcrelay_SOURCES = dhcrelay.c
  dhcrelay_LDADD = ../common/libdhcp.@A@ ../omapip/libomapi.@A@ \
@@ -64,9 +72,10 @@ author: Michael Gilbert <mgilbert@debian.org>
 +                 -lisc-export
  man_MANS = dhcrelay.8
  EXTRA_DIST = $(man_MANS)
- 
---- a/server/Makefile.am
-+++ b/server/Makefile.am
+Index: isc-dhcp/server/Makefile.am
+===================================================================
+--- isc-dhcp.orig/server/Makefile.am
++++ isc-dhcp/server/Makefile.am
 @@ -15,10 +15,9 @@ dhcpd_SOURCES = dhcpd.c dhcp.c bootp.c c
  dhcpd_CFLAGS = $(LDAP_CFLAGS)
  dhcpd_LDADD = ../common/libdhcp.@A@ ../omapip/libomapi.@A@ \
@@ -81,8 +90,10 @@ author: Michael Gilbert <mgilbert@debian.org>
  
  man_MANS = dhcpd.8 dhcpd.conf.5 dhcpd.leases.5
  EXTRA_DIST = $(man_MANS)
---- a/Makefile.am
-+++ b/Makefile.am
+Index: isc-dhcp/Makefile.am
+===================================================================
+--- isc-dhcp.orig/Makefile.am
++++ isc-dhcp/Makefile.am
 @@ -38,7 +38,7 @@ endif
  
  # Use an autoconf substitution vs an automake conditional here
@@ -90,11 +101,13 @@ author: Michael Gilbert <mgilbert@debian.org>
 -SUBDIRS = @BINDSUBDIR@ includes tests common omapip client dhcpctl relay server
 +SUBDIRS = includes tests common omapip client dhcpctl relay server
  
- nobase_include_HEADERS = dhcpctl/dhcpctl.h
+ DIST_SUBDIRS = $(SUBDIRS) keama
  
---- a/configure.ac
-+++ b/configure.ac
-@@ -789,7 +789,6 @@ no)
+Index: isc-dhcp/configure.ac
+===================================================================
+--- isc-dhcp.orig/configure.ac
++++ isc-dhcp/configure.ac
+@@ -780,7 +780,6 @@ no)
  		bindversion=${MAJORVER}.${MINORVER}.${PATCHVER}${RELEASETYPE}${RELEASEVER}
  		BINDSRCDIR="${my_abs_srcdir}/bind/bind-$bindversion"
  	fi
@@ -102,7 +115,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  
  	BINDLIBIRSDIR="$BINDSRCDIR/lib/irs"
  	BINDLIBDNSDIR="$BINDSRCDIR/lib/dns"
-@@ -800,17 +799,6 @@ no)
+@@ -791,17 +790,6 @@ no)
  	if test ! -d "$use_libbind"; then
  		AC_MSG_ERROR([Cannot find bind directory at $use_libbind])
  	fi
@@ -120,7 +133,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  	BINDDIR="$use_libbind"
  	BINDLIBIRSDIR="$BINDDIR/lib"
  	BINDLIBDNSDIR="$BINDDIR/lib"
-@@ -851,20 +839,6 @@ AC_ARG_ENABLE(libtool,
+@@ -842,20 +830,6 @@ AC_ARG_ENABLE(libtool,
  [use GNU libtool for dynamic shared libraries (default is no).]),
  	want_libtool="$enableval")
  

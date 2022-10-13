@@ -11,7 +11,6 @@ LEASE_PATH=/var/lib/dhcp
 DHCLIENT_SCRIPT=/sbin/dhclient-script
 
 CFLAGS+=-Wall
-CFLAGS+=-I/usr/include/bind-export
 CFLAGS+=-DCALL_SCRIPT_ON_ONETRY_FAIL
 CFLAGS+=$(shell dpkg-buildflags --get CFLAGS)
 
@@ -24,7 +23,7 @@ CFLAGS+=-D_PATH_DHCLIENT_CONF='\"/etc/dhcp/dhclient.conf\"'
 CFLAGS+=-D_PATH_DHCLIENT_DB='\"$(LEASE_PATH)/dhclient.leases\"'
 CFLAGS+=-D_PATH_DHCLIENT6_DB='\"$(LEASE_PATH)/dhclient6.leases\"'
 
-CONFFLAGS=--prefix=/usr --with-libbind=/usr --enable-log-pid --enable-paranoia
+CONFFLAGS+=--prefix=/usr --enable-log-pid --enable-paranoia
 
 # cross-architecture building
 ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
@@ -45,17 +44,17 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	# ldap-enabled build
 	test -f Makefile && $(MAKE) distclean || true
-	./configure --with-ldap --with-ldapcrypto CFLAGS="$(CFLAGS) -DNSUPDATE" LIBS="-lirs-export $(LIBS)" $(CONFFLAGS)
+	./configure --with-ldap --with-ldapcrypto CFLAGS="$(CFLAGS) -DNSUPDATE" $(CONFFLAGS) LIBS="$(LIBS) -latomic"
 	$(MAKE)
 	mv server/dhcpd dhcpd
 	# ddns-disabled build
 	test -f Makefile && $(MAKE) distclean || true
-	./configure CFLAGS="$(CFLAGS)" $(CONFFLAGS)
+	./configure CFLAGS="$(CFLAGS)" $(CONFFLAGS) LIBS="$(LIBS) -latomic"
 	$(MAKE)
 	mv client/dhclient dhclient
 	# ldap-disabled build
 	test -f Makefile && $(MAKE) distclean || true
-	./configure CFLAGS="$(CFLAGS) -DNSUPDATE" LIBS="-lirs-export $(LIBS)" $(CONFFLAGS)
+	./configure CFLAGS="$(CFLAGS) -DNSUPDATE" $(CONFFLAGS) LIBS="$(LIBS) -latomic"
 	$(MAKE)
 
 override_dh_install:
