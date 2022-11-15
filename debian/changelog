@@ -1,16 +1,78 @@
+isc-dhcp (4.4.3-P1-1pexip1) pexip; urgency=low
+
+  * New upstream release.
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 15 Nov 2022 21:06:39 +0000
+
+isc-dhcp (4.4.3-P1-1) unstable; urgency=low
+
+  * New upstream version 4.4.3-P1
+  * Remove no longer needed CVE-2022-2928.patch and CVE-2022-2929.patch
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Thu, 13 Oct 2022 14:12:54 +0200
+
+isc-dhcp (4.4.3-2.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * An option refcount overflow exists in dhcpd (CVE-2022-2928)
+    (Closes: #1021320)
+  * DHCP memory leak (CVE-2022-2929) (Closes: #1021320)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Thu, 06 Oct 2022 22:20:47 +0200
+
+isc-dhcp (4.4.3-2) unstable; urgency=medium
+
+  * Explicitly link against -latomic to fix FTBFS on mipsel, m68k, powerpc and
+    sh4
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Thu, 26 May 2022 21:31:55 +0200
+
+isc-dhcp (4.4.3-1) unstable; urgency=low
+
+  * New upstream version 4.4.3
+  * Refresh fix-manpage-macro.patch
+  * Refresh fix-spelling.patch
+  * Disable dhclient-script-exit-status.patch. Upstream has fixed the related
+    bug (#123)
+  * Use bundled BIND libraries instead of libbind-export-dev (Closes: #942502)
+  * Bump debhelper-compat to 13
+  * Remove Fixed_gcc_10_compilation_issues.patch
+  * Fix some install paths to make dh_missing happy
+  * Add EOM NEWS for client and relay
+  * Fix handling of stale pid file for init.d/dhcpd start. Thanks to H.-Dirk
+    Schmitt <dirk@computer42.org> (Closes: #1009209)
+  * Bump Standards-Version to 4.6.0.1. No changes required
+  * Bump d/watch version to 4.
+  * Update d/copyright
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Fri, 06 May 2022 17:24:11 +0200
+
+isc-dhcp (4.4.2-P1-1) unstable; urgency=low
+
+  [ Santiago Ruano Rincón ]
+  * Fix debian/watch to make it take into account upstream security releases
+    (e.g. -P1)
+  * Update upstream signing key: replace revoked one by
+    2455774D42FDFE6B9C383EB8FE1002BC5970811F
+  * Add myself to Uploaders (Closes: #1000662)
+  * Remove Files-Excluded from d/copyright
+  * New upstream version 4.4.2-P1 (Closes: #975729)
+  * Refresh configure.patch, disable-nsupdate.patch, system-bind.patch
+  * Remove no longer needed patches: 4.4.2.CVE-2021-25217.patch
+    CVE-2017-3144.patch CVE-2018-5732.patch CVE-2018-5733.patch
+  * Move Vcs-* to debian/ namespace
+  * Use https in d/watch and d/copyright
+
+  [ Bernhard Schmidt ]
+  * Add Salsa CI (again)
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Thu, 24 Feb 2022 11:24:43 +0100
+
 isc-dhcp (4.4.1-2.3+deb11u1pexip1) pexip; urgency=medium
 
   * New upstream release.
 
  -- Mark Hymers <mark.hymers@pexip.com>  Tue, 11 Oct 2022 10:04:21 +0100
-
-isc-dhcp (4.4.1-2.3+deb11u1) bullseye-security; urgency=high
-
-  * Non-maintainer upload by the Security Team.
-  * An option refcount overflow exists in dhcpd (CVE-2022-2928)
-  * DHCP memory leak (CVE-2022-2929)
-
- -- Salvatore Bonaccorso <carnil@debian.org>  Tue, 04 Oct 2022 22:52:25 +0200
 
 isc-dhcp (4.4.1-2.3pexip3) pexip-bullseye; urgency=medium
 

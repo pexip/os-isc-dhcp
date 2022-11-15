@@ -1,9 +1,11 @@
 description: don't regenerate Makefile.am files
 author: Michael Gilbert <mgilbert@debian.org>
 
---- a/configure.ac
-+++ b/configure.ac
-@@ -977,17 +977,13 @@ AC_CONFIG_FILES([
+Index: isc-dhcp/configure.ac
+===================================================================
+--- isc-dhcp.orig/configure.ac
++++ isc-dhcp/configure.ac
+@@ -968,19 +968,15 @@ AC_CONFIG_FILES([
    Makefile
    client/Makefile
    client/tests/Makefile
@@ -13,9 +15,11 @@ author: Michael Gilbert <mgilbert@debian.org>
 -  dhcpctl/Makefile.am
    dhcpctl/Makefile
    includes/Makefile
+   keama/Makefile
 -  omapip/Makefile.am
    omapip/Makefile
    relay/Makefile
+   relay/tests/Makefile
    server/Makefile
 -  tests/Makefile.am
    tests/Makefile

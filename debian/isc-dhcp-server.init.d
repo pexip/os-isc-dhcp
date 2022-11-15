@@ -100,8 +100,12 @@ start_daemon()
 	log_daemon_msg "Starting $DESC" "$NAME"
 
 	if [ -e "$PIDFILE" ]; then
-		log_failure_msg "dhcpd service already running (pid file $PIDFILE currenty exists)"
-		exit 1
+		if ps -p "$pid" > /dev/null 2>&1; then
+			log_failure_msg "dhcpd service already running (pid file $PIDFILE currenty exists)"
+			exit 1
+		else
+			echo "ingore stale pid file $PIDFILE"
+		fi
 	fi
 
 	touch /var/lib/dhcp/$NAME.leases

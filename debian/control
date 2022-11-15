@@ -3,20 +3,19 @@ Section: net
 Priority: important
 Maintainer: Pexip AS <packaging@pexip.com>
 XSBC-Pexip-Original-Maintainer: Debian ISC DHCP Maintainers <isc-dhcp@packages.debian.org>
-XSBC-Pexip-Original-Uploaders: Andrew Pollock <apollock@debian.org>, Michael Gilbert <mgilbert@debian.org>
+XSBC-Pexip-Original-Uploaders: Andrew Pollock <apollock@debian.org>, Michael Gilbert <mgilbert@debian.org>, Santiago Ruano Rincón <santiago@debian.org>
 Homepage: http://www.isc.org
 Build-Depends:
  dpkg-dev (>= 1.13.2),
- debhelper (>= 9.20151220),
+ debhelper-compat (=13),
  dh-autoreconf,
  groff,
  pkg-config,
  po-debconf,
  libldap2-dev,
- libbind-export-dev (>= 1:9.11.5),
-Standards-Version: 3.9.8
-Vcs-Git: https://salsa.debian.org/dhcp-team/isc-dhcp.git
-Vcs-Browser: https://salsa.debian.org/dhcp-team/isc-dhcp
+Standards-Version: 4.6.0.1
+Vcs-Git: https://salsa.debian.org/debian/isc-dhcp.git
+Vcs-Browser: https://salsa.debian.org/debian/isc-dhcp
 XS-Pexip-Upstream: http://deb.debian.org/debian/ bookworm
 
 Package: isc-dhcp-server

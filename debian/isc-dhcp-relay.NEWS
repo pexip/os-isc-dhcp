@@ -1,0 +1,11 @@
+isc-dhcp-relay (4.4.3-1) unstable; urgency=medium
+
+  ISC has decided to stop maintaining the client and relay parts of isc-dhcp,
+  and they will be removed after the 4.4.3 release, keeping only the server
+  component. Please, consider using an alternative for isc-dhcp-relay
+  (dhcrelay).
+
+  More information can be found in the ISC official announcement:
+  https://www.isc.org/blogs/dhcp-client-relay-eom/
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Thu, 17 Mar 2022 16:43:03 +0100
