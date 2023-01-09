@@ -395,8 +395,9 @@ case "$reason" in
     BOUND6|RENEW6|REBIND6)
         if [ "${new_ip6_address}" ]; then
             # set leased IP
-            ip -6 addr add ${new_ip6_address} \
-                dev ${interface} scope global
+            ip -6 addr replace ${new_ip6_address} \
+                dev ${interface} scope global valid_lft ${new_max_life} \
+                preferred_lft ${new_preferred_life}
         fi
 
         # update /etc/resolv.conf
