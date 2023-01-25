@@ -1,3 +1,10 @@
+isc-dhcp (4.4.3-P1-1pexip2) pexip; urgency=low
+
+  * Merge openssl3 changes to bullseye
+  * Remove duplicates from the dhclient.conf
+
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Wed, 25 Jan 2023 16:01:22 +0000
+
 isc-dhcp (4.4.3-P1-1pexip1) pexip-bullseye-openssl3; urgency=low
 
   * New upstream release.
