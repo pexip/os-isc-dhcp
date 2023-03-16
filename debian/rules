@@ -25,9 +25,11 @@ CFLAGS+=-D_PATH_DHCLIENT6_DB='\"$(LEASE_PATH)/dhclient6.leases\"'
 
 CONFFLAGS+=--prefix=/usr --enable-log-pid --enable-paranoia
 
+include /usr/share/dpkg/buildtools.mk
 # cross-architecture building
 ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
 CONFFLAGS+=--build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE) --with-randomdev=/dev/random
+export BUILD_CC=$(CC_FOR_BUILD)
 endif
 
 # hurd support
@@ -38,6 +40,18 @@ endif
 
 %:
 	dh $@ --parallel --with autoreconf
+
+# Ensure that the bind config.guess/config.sub are unpacked first,
+# otherwise they won't be updated and isc-dhcp will FTBFS on new arches
+# Thanks to Paul Wise
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1010807#30
+# Closes: #1010807
+execute_before_dh_update_autotools_config:
+	cd bind && tar xf bind.tar.gz
+
+# Ensure that the bind build system gets rebuilt too
+override_dh_autoreconf:
+	dh_autoreconf debian/autogen.sh
 
 override_dh_auto_configure:
 
@@ -79,6 +93,8 @@ override_dh_install:
 	    -e 's/CLIENTBINDIR/\/sbin/g' \
 	    -e 's/DBDIR/\/var\/lib\/dhcp/g' \
 	    -i debian/tmp/usr/share/man/man*/*
+	dh_apparmor -pisc-dhcp-client --profile-name=sbin.dhclient
+	dh_apparmor -pisc-dhcp-server --profile-name=usr.sbin.dhcpd
 
 override_dh_installinit:
 	dh_installinit -Nisc-dhcp-server

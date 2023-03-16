@@ -1,0 +1,34 @@
+From: Christopher Huhn <C.Huhn@gsi.de>
+Date: Thu, 29 Aug 2019 17:25:12 +0200
+Subject: Use ieee-data package to utilize oui.txt
+
+---
+ contrib/dhcp-lease-list.pl | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/contrib/dhcp-lease-list.pl b/contrib/dhcp-lease-list.pl
+index aa6372d..ccf6eea 100644
+--- a/contrib/dhcp-lease-list.pl
++++ b/contrib/dhcp-lease-list.pl
+@@ -29,8 +29,9 @@ my @LEASES = ('/var/db/dhcpd.leases', '/var/lib/dhcp/dhcpd.leases', '/var/lib/dh
+ my @all_leases;
+ my @leases;
+ 
+-my @OUIS = ('/usr/share/misc/oui.txt', '/usr/local/etc/oui.txt');
+-my $OUI_URL = 'http://standards.ieee.org/regauth/oui/oui.txt';
++my @OUIS = ('/var/lib/ieee-data/oui.txt', '/usr/share/ieee-data/oui.txt',
++            '/usr/local/etc/oui.txt');
++my $OUI_URL = 'http://standards-oui.ieee.org/oui.txt';
+ my $oui;
+ 
+ my %data;
+@@ -64,7 +65,8 @@ sub check_oui_file() {
+     }
+ 
+     if (not defined $oui) {
+-	print(STDERR "To get manufacturer names please download $OUI_URL ");
++	print(STDERR "To get manufacturer names please install the ieee-data package\n")
++	print(STDERR "or download $OUI_URL ");
+ 	print(STDERR "to /usr/local/etc/oui.txt\n");
+     }
+ }

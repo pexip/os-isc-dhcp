@@ -3,3 +3,5 @@ dhclient sbin
 debian/dhclient.conf etc/dhcp
 
 debian/debug etc/dhcp
+
+debian/apparmor/sbin.dhclient etc/apparmor.d

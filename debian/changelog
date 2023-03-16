@@ -1,3 +1,10 @@
+isc-dhcp (4.4.3-P1-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Backport missing IPv6 address lifetime handling. (closes: #1022969)
+
+ -- Bastian Blank <waldi@debian.org>  Mon, 09 Jan 2023 10:15:41 +0100
+
 isc-dhcp (4.4.3-P1-1pexip2) pexip; urgency=low
 
   * Merge openssl3 changes to bullseye
