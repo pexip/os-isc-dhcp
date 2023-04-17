@@ -1,3 +1,24 @@
+isc-dhcp-server (4.4.3-P1-2) unstable; urgency=medium
+
+  # ISC DHCP completely EOL
+
+  ISC has stopped maintaining the server component of isc-dhcp since October
+  2022. A similar decision was made for the client and relay parts earlier the
+  same year. ISC DHCP Server users are strongly encouraged to look for an
+  alternative.
+
+  More information can be found in these official announcements:
+  https://lists.isc.org/pipermail/dhcp-users/2022-October/022786.html
+  https://www.isc.org/blogs/isc-dhcp-eol/
+
+  # AppArmor support
+
+  Since 4.4.3-P1-1.1, isc-dhcp-server includes an apparmor profile (thanks
+  Ubuntu!). BIND keys for dynamic update should be stored in both /etc/bind9/
+  and /etc/dhcp/ddns-keys/, for bind9 and dhcpd access, respectively.
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Thu, 30 Mar 2023 10:48:03 +0200
+
 dhcp3 (3.1.1-6) unstable; urgency=low
 
 	 Please note that when running a failover pair of DHCP servers, in 3.1.x, the

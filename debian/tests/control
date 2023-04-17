@@ -1,0 +1,2 @@
+Tests: client-server
+Restrictions: allow-stderr, needs-root

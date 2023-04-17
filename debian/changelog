@@ -1,3 +1,17 @@
+isc-dhcp (4.4.3-P1-2) unstable; urgency=medium
+
+  [ Gabriel Potter ]
+  * Support bound /etc/resolv.conf (Closes: #1034502)
+
+  [ Bastian Germann ]
+  * d/copyright Format: Add trailing slash
+
+  [ Santiago Ruano Rincón ]
+  * Add NEWS about isc-dhcp-server EOL'ed and its apparmor profile
+  * Test debian/tests/client-server
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Mon, 17 Apr 2023 14:20:02 +0200
+
 isc-dhcp (4.4.3-P1-1.1) unstable; urgency=medium
 
   * Non-maintainer upload.
