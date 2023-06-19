@@ -1,0 +1,65 @@
+#!/usr/bin/sh
+#
+# A basic IPv4 dhcp server and client test
+# It also checks if dhclient handles correctly resolv.conf in a network
+# namespace
+
+set -e
+set -x
+
+nsserver=server
+nsclient=client
+ip_addr_server="10.42.42.1/24"
+ifaceserver=veth-server
+ifaceclient=veth-client
+
+ip netns add $nsserver
+ip netns add $nsclient
+
+ip link add \
+       ptp-$ifaceserver \
+       type veth \
+       peer name ptp-$ifaceclient
+
+ip link set ptp-$ifaceserver netns $nsserver
+ip link set ptp-$ifaceclient netns $nsclient
+
+mkdir -p /etc/netns/$nsclient
+echo "nameserver 8.8.8.8" > /etc/netns/$nsclient/resolv.conf
+
+cat << EOF >> /etc/dhcp/dhcpd.conf
+option domain-name "example.org";
+option domain-name-servers 1.1.1.1;
+
+default-lease-time 600;
+max-lease-time 7200;
+
+log-facility local7;
+
+subnet 10.42.42.0 netmask 255.255.255.0 {
+    range 10.42.42.10 10.42.42.19;
+}
+EOF
+
+ip netns exec $nsserver ip addr \
+    add $ip_addr_server dev ptp-$ifaceserver
+ip netns exec $nsserver ip link set \
+    dev ptp-$ifaceserver up
+ip netns exec $nsclient ip link set \
+    dev ptp-$ifaceclient up
+
+if ! /usr/sbin/dhcpd -t -q -cf /etc/dhcp/dhcpd.conf > /dev/null 2>&1; then
+    echo "dhcpd self-test failed. Please fix it."
+    echo "The error was: "
+    /usr/sbin/dhcpd -t -cf /etc/dhcp/dhcpd.conf
+    exit 1
+fi
+
+ip netns exec $nsserver /usr/sbin/dhcpd -cf /etc/dhcp/dhcpd.conf
+
+ip netns exec $nsclient dhclient ptp-veth-client
+
+ip netns exec $nsclient ip addr
+
+grep "1.1.1.1" /etc/netns/$nsclient/resolv.conf
+grep -v "8.8.8.8" /etc/netns/$nsclient/resolv.conf

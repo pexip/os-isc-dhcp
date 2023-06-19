@@ -1,3 +1,23 @@
+isc-dhcp (4.4.3-P1-2pexip1) pexip; urgency=medium
+
+  * New upstream release
+
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Mon, 19 Jun 2023 12:59:47 +0100
+
+isc-dhcp (4.4.3-P1-2) unstable; urgency=medium
+
+  [ Gabriel Potter ]
+  * Support bound /etc/resolv.conf (Closes: #1034502)
+
+  [ Bastian Germann ]
+  * d/copyright Format: Add trailing slash
+
+  [ Santiago Ruano Rincón ]
+  * Add NEWS about isc-dhcp-server EOL'ed and its apparmor profile
+  * Test debian/tests/client-server
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Mon, 17 Apr 2023 14:20:02 +0200
+
 isc-dhcp (4.4.3-P1-1.1pexip1) pexip; urgency=medium
 
   * New upstream release
