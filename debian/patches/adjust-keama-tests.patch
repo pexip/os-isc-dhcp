@@ -1,0 +1,70 @@
+From: Athos Ribeiro <athos.ribeiro@canonical.com>
+Date: Tue, 12 Sep 2023 14:49:54 -0300
+Subject: Adjust keama tests
+
+Keama upstream tests have issues that could lead to test failure.
+Namely,
+
+* a specific fixed-address entry would require a DNS check. Changing
+  it to check for localhost would generate test inconsistencies in systems
+  where localhost can be resolved for both ipv4 and ipv6. Therefore, we remove
+  this specific test;
+* one of the suffixes for the test files is not covered. We make sure
+  all cases currently available are now covered.
+* conversions for the "min-secs" configuration directive assumes
+  little-endianess (it uses libc's ntohs function to convert that value from
+  network byte order to the host's byte order). We change the value to be
+  converted to 0 so it is compatible to any endianess.
+
+Forwarded: no
+Last-Update: 2023-10-17
+---
+ keama/tests/ipaddrhost4.in4 | 2 +-
+ keama/tests/ipaddrhost4.out | 2 +-
+ keama/tests/runone.sh       | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+--- a/keama/tests/ipaddrhost4.in4
++++ /dev/null
+@@ -1,8 +0,0 @@
+-# hostname config
+-
+-host test1 {
+-    hardware ethernet 00:07:0E:36:48:19;
+-    fixed-address www.isc.org;
+-}
+-
+-subnet 149.20.64.0 netmask 255.255.255.128 { }
+--- a/keama/tests/runone.sh
++++ b/keama/tests/runone.sh
+@@ -101,7 +101,7 @@
+ fi
+ 
+ if [ $hook -eq 1 ]; then
+-    sed s,/path/,${HOOK:-/path/}, < ${expected}L > $expected
++    sed s,/path/,${HOOK:-/path/}, < ${expected}l > $expected
+ fi
+ 
+ if [ $errcase -ne 0 ]; then
+--- a/keama/tests/configdata4.in4
++++ b/keama/tests/configdata4.in4
+@@ -8,7 +8,7 @@
+ 
+ boot-unknown-clients false;
+ 
+-min-secs 20;
++min-secs 0;
+ 
+ lease-file-name "/tmp/leases";
+ 
+--- a/keama/tests/configdata4.out
++++ b/keama/tests/configdata4.out
+@@ -21,7 +21,7 @@
+ //    {
+ //      "name": "min-secs",
+ //      "code": 14,
+-//      "value": 5120
++//      "value": 0
+ //    },
+ //    /// lease-file-name is an internal ISC DHCP feature
+ //    {

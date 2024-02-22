@@ -2,7 +2,7 @@ Source: isc-dhcp
 Section: net
 Priority: important
 Maintainer: Debian ISC DHCP Maintainers <isc-dhcp@packages.debian.org>
-Uploaders: Andrew Pollock <apollock@debian.org>, Michael Gilbert <mgilbert@debian.org>, Santiago Ruano Rincón <santiago@debian.org>
+Uploaders: Andrew Pollock <apollock@debian.org>, Santiago Ruano Rincón <santiago@debian.org>
 Homepage: http://www.isc.org
 Build-Depends:
  dpkg-dev (>= 1.13.2),
@@ -13,7 +13,7 @@ Build-Depends:
  pkg-config,
  po-debconf,
  libldap2-dev,
-Standards-Version: 4.6.0.1
+Standards-Version: 4.6.2
 Vcs-Git: https://salsa.debian.org/debian/isc-dhcp.git
 Vcs-Browser: https://salsa.debian.org/debian/isc-dhcp
 
@@ -24,7 +24,6 @@ Depends:
  ${misc:Depends},
  ${shlibs:Depends},
  debianutils (>= 2.8.2),
- lsb-base,
 Recommends:
  isc-dhcp-common,
  policycoreutils,
@@ -34,7 +33,7 @@ Breaks:
 Replaces:
  isc-dhcp-common (<= 4.3.3-1),
 Suggests:
- policykit-1,
+ polkitd,
  isc-dhcp-server-ldap,
  ieee-data
 Description: ISC DHCP server for automatic IP address assignment
@@ -108,6 +107,8 @@ Suggests:
  isc-dhcp-client-ddns,
 Provides:
  dhcp-client,
+Conflicts:
+ isc-dhcp-client-ddns (<< 4.4.3-P1-4.1),
 Description: DHCP client for automatically obtaining an IP address
  This is the Internet Software Consortium's DHCP client.
  .
@@ -165,7 +166,6 @@ Architecture: any
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
- lsb-base (>= 3.0-6),
  debianutils (>= 2.8.2),
 Recommends:
  isc-dhcp-common,
@@ -186,3 +186,15 @@ Description: ISC DHCP relay daemon
  .
  More information can be found in the ISC official announcement:
  https://www.isc.org/blogs/dhcp-client-relay-eom/
+
+Package: isc-dhcp-keama
+Priority: optional
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: KEA Migration Assistant
+ This is an ISC DHCP server to ISC KEA Migration Assistant.
+ .
+ The KEA Migration Assistant (aka keama) is an experimental tool
+ which helps to translate ISC DHCP configurations to Kea.

@@ -1,2 +1,5 @@
 Tests: client-server
 Restrictions: allow-stderr, needs-root
+
+Tests: keama-tests
+Depends: isc-dhcp-keama

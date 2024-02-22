@@ -1,0 +1,13 @@
+#!/usr/bin/sh
+set -e
+
+# Call installed keama during test runs
+sed -i 's|\.\./keama|/usr/sbin/keama|' keama/tests/runone.sh
+sed -i 's|\.\./\.\./keama|/usr/sbin/keama|' keama/tests/samples/runone.sh
+
+# Run all upstream checks
+/bin/sh keama/tests/runall.sh
+
+# Restore test scripts
+sed -i 's|/usr/sbin/keama|../keama|' keama/tests/runone.sh
+sed -i 's|/usr/sbin/keama|../../keama|' keama/tests/samples/runone.sh

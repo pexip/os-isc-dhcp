@@ -2,9 +2,47 @@
 
 set -e 
 
-if [ "$1" != "upgrade" ]; then
-	dpkg-divert --package isc-dhcp-client-ddns --add --rename \
-		--divert /sbin/dhclient-noddns /sbin/dhclient
-fi
+# DEP17 M18: Duplicate diversion in aliased location /sbin.
+
+case "$1" in
+	install)
+		# canonical path; the one we are using going forward.
+		dpkg-divert --package isc-dhcp-client-ddns --add --rename \
+			--divert /usr/sbin/dhclient-noddns /usr/sbin/dhclient
+		# aliased path, for upgrades. postinst will --remove it.
+		dpkg-divert --package isc-dhcp-client-ddns --add --rename \
+			--divert /sbin/dhclient-noddns.usr-is-merged /sbin/dhclient
+
+		;;
+
+	upgrade)
+		TRUENAME=$(dpkg-divert --truename /usr/sbin/dhclient)
+		if test "$TRUENAME" = /usr/sbin/dhclient.usr-is-merged; then
+			# isc-dhcp-client.preinst duplicated the diversion for us.
+			# Remove duplicated diversion.
+			dpkg-divert --package isc-dhcp-client-ddns --remove --no-rename \
+				--divert /usr/sbin/dhclient.usr-is-merged /usr/sbin/dhclient
+			dpkg-divert --package isc-dhcp-client-ddns --add --no-rename \
+				--divert /usr/sbin/dhclient-noddns /usr/sbin/dhclient
+			dpkg-divert --package isc-dhcp-client-ddns --remove --no-rename \
+				/sbin/dhclient
+			dpkg-divert --package isc-dhcp-client-ddns --add --no-rename \
+				--divert /sbin/dhclient-noddns.usr-is-merged /sbin/dhclient
+			mv "$TRUENAME" /usr/sbin/dhclient-noddns
+		elif test "$TRUENAME" != /usr/sbin/dhclient-noddns; then
+			dpkg-divert --package isc-dhcp-client-ddns --add --no-rename \
+				--divert /usr/sbin/dhclient-noddns /usr/sbin/dhclient
+			TRUENAME=$(dpkg-divert --truename /sbin/dhclient)
+			dpkg-divert --package isc-dhcp-client-ddns --remove --no-rename \
+				/sbin/dhclient
+			dpkg-divert --package isc-dhcp-client-ddns --add --no-rename \
+				--divert /sbin/dhclient-noddns.usr-is-merged /sbin/dhclient
+			if test -e "$TRUENAME"; then
+				mv "$TRUENAME" "/sbin/dhclient-noddns.usr-is-merged"
+			fi
+		fi
+
+		;;
+esac
 
 #DEBHELPER#

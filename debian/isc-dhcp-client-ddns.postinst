@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+
+# DEP17 M18: Duplicate diversion in aliased location /sbin.
+
+if [ "$1" = "configure" ]; then
+	# Remove diversion in aliased path, which is only needed for upgrades.
+	dpkg-divert --package isc-dhcp-client-ddns --remove --no-rename \
+		--divert /sbin/dhclient-noddns.usr-is-merged /sbin/dhclient
+fi
+
+#DEBHELPER#
