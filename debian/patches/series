@@ -18,3 +18,5 @@ disable-nsupdate.patch
 configure.patch
 
 cross.patch
+adjust-keama-tests.patch
+0013-DHCPv6-over-PPP-support-626514.patch

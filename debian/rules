@@ -3,12 +3,12 @@
 export DH_VERBOSE=1
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
-DEB_HOST_ARCH_OS=$(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
-DEB_HOST_GNU_TYPE=$(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 LEASE_PATH=/var/lib/dhcp
-DHCLIENT_SCRIPT=/sbin/dhclient-script
+DHCLIENT_SCRIPT=/usr/sbin/dhclient-script
 
 CFLAGS+=-Wall
 CFLAGS+=-DCALL_SCRIPT_ON_ONETRY_FAIL
@@ -39,7 +39,10 @@ CONFFLAGS+=--enable-use-sockets
 endif
 
 %:
-	dh $@ --parallel --with autoreconf
+	dh $@ --with autoreconf
+
+override_dh_clean:
+	dh_clean $@ -Xkeama/tests/samples/*
 
 # Ensure that the bind config.guess/config.sub are unpacked first,
 # otherwise they won't be updated and isc-dhcp will FTBFS on new arches
@@ -70,6 +73,21 @@ override_dh_auto_build:
 	test -f Makefile && $(MAKE) distclean || true
 	./configure CFLAGS="$(CFLAGS) -DNSUPDATE" $(CONFFLAGS) LIBS="$(LIBS) -latomic"
 	$(MAKE)
+	# keama build
+	$(MAKE) -C keama
+
+override_dh_auto_test:
+	/bin/sh keama/tests/runall.sh 2> /tmp/keama-test-errors
+	cat /tmp/keama-test-errors
+	test -f /tmp/keama-test-errors
+	test ! -s /tmp/keama-test-errors
+	rm -f /tmp/keama-test-errors
+	dh_auto_test $@
+
+override_dh_auto_install:
+	dh_auto_install
+	# install keama
+	dh_auto_install -- -C keama
 
 override_dh_install:
 	# rename some upstream files
@@ -90,7 +108,7 @@ override_dh_install:
 	# use actual paths rather than undefined variables in man pages
 	sed -e 's|ETCDIR|/etc/dhcp|g' \
 	    -e 's/RUNDIR/\/var\/run/g' \
-	    -e 's/CLIENTBINDIR/\/sbin/g' \
+	    -e 's/CLIENTBINDIR/\/usr\/sbin/g' \
 	    -e 's/DBDIR/\/var\/lib\/dhcp/g' \
 	    -i debian/tmp/usr/share/man/man*/*
 	dh_apparmor -pisc-dhcp-client --profile-name=sbin.dhclient

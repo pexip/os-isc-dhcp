@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+# begin-remove-after: released:forky
+if [ "$1" = configure ] &&
+	[ "$(dpkg-divert --truename /usr/sbin/dhclient)" = /usr/sbin/dhclient.usr-is-merged ] &&
+	[ "$(dpkg-divert --listpackage /usr/sbin/dhclient)" = isc-dhcp-client-ddns ]; then
+	# /usr/sbin/dhclient is still diverted in the same way as our
+	# preinst did.  Conclude that isc-dhcp-client-ddns was installed
+	# during preinst, we duplicated the diversion and now
+	# isc-dhcp-client-ddns is removed. We have to clean up.
+	echo "Removing duplicated diversion of /usr/sbin/dhclient after isc-dhcp-client-ddns is removed."
+	dpkg-divert --package isc-dhcp-client-ddns --remove --rename \
+		--divert /usr/sbin/dhclient.usr-is-merged /usr/sbin/dhclient
+fi
+# end-remove-after
+
+#DEBHELPER#

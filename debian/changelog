@@ -1,3 +1,62 @@
+isc-dhcp (4.4.3-P1-5) unstable; urgency=low
+
+  * Upload to unstable
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Thu, 22 Feb 2024 11:47:42 -0300
+
+isc-dhcp (4.4.3-P1-5~exp2) experimental; urgency=medium
+
+  [ Michael Gilbert ]
+  * Remove myself from the uploaders.
+
+  [ Santiago Ruano Rincón ]
+  * Add systemd-resolved integreation hooks. Taken from Ubuntu's. Thanks to
+    Ken Milmore <ken.milmore@gmail.com>
+    (Closes: #1025062)
+  * Thanks Michael for all your work!
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Mon, 05 Feb 2024 19:29:05 -0300
+
+isc-dhcp (4.4.3-P1-5~exp1) experimental; urgency=medium
+
+  * Move dhclient to /usr/sbin and add duplicated diversions (DEP17 P3 M18).
+    Also add Conflicts: older isc-dhcp-client-ddns. Thanks to Chris
+    Hofstaedtler <zeha@debian.org> (Closes: #1060089)
+  * Add isc-dhcp-client-ddns lintian overrides about
+    diversion-for-unknown-file sbin/dhclient
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Thu, 25 Jan 2024 12:25:30 -0300
+
+isc-dhcp (4.4.3-P1-4) unstable; urgency=low
+
+  [ Athos Ribeiro ]
+  * d/p/adjust-keama-tests.patch: do not rely on endianess (Closes: #1054077)
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Fri, 20 Oct 2023 09:16:37 -0300
+
+isc-dhcp (4.4.3-P1-3) unstable; urgency=low
+
+  [ Athos Ribeiro ]
+  * Ship keama in a new isc-dhcp-keama binary package (Closes: #1036277)
+  * Add DEP8 tests for keama
+  * d/p/adjust-keama-tests.patch: adjust keama tests
+  * d/rules: make keama tests fail on error messages
+
+  [ Santiago Ruano Rincón ]
+  * Make dhclient-script exits with error when it is not able to write in the
+    temporary file. Patch by Johannes Weißl <jargon@molb.org>
+    (Closes: #982894)
+  * Import debian/patches/0013-DHCPv6-over-PPP-support-626514.patch
+    (Closes: #1015809)
+  * Enable ARM builds in salsa-ci.yml
+  * Bump Standards-Version to 4.6.2. No changes needed
+  * Remove obsolete dependencies on lsb-base and policykit-1. Replace with
+    polkitd
+  * Fix assignment of dpkg-architecture variables in d/rules
+  * Remove the --parallel argument from the call to dh on d/rules
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Fri, 15 Sep 2023 21:50:04 +0530
+
 isc-dhcp (4.4.3-P1-2+pexip24u4) pexip-bookworm; urgency=medium
 
   * New versioning scheme
