@@ -1,3 +1,9 @@
+isc-dhcp (4.4.3-P1-8) unstable; urgency=medium
+
+  * Rename /etc/apparmor.d/local/sbin.dhclient conffile (Closes: #1103503)
+
+ -- Alexander Kurtz <alexander@kurtz.be>  Sat, 03 May 2025 19:16:14 +0200
+
 isc-dhcp (4.4.3-P1-7) unstable; urgency=medium
 
   * Rename etc/apparmor.d/sbin.dhclient conffile (Closes: #1102626)
