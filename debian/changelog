@@ -1,3 +1,17 @@
+isc-dhcp (4.4.3-P1-7) unstable; urgency=medium
+
+  * Rename etc/apparmor.d/sbin.dhclient conffile (Closes: #1102626)
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Thu, 17 Apr 2025 21:44:03 -0300
+
+isc-dhcp (4.4.3-P1-6) unstable; urgency=low
+
+  * Rename and update debian/apparmor/usr.sbin.dhclient to follow new
+    nm-dhcp-helper path (Closes: #1055067)
+  * Add information about the EOL in the packages description (Closes: #1102021)
+
+ -- Santiago Ruano Rincón <santiago@debian.org>  Wed, 09 Apr 2025 16:07:51 -0300
+
 isc-dhcp (4.4.3-P1-5+pexip25u1) pexip-trixie; urgency=medium
 
   * Initial trixie build

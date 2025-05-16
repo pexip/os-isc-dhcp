@@ -14,4 +14,12 @@ if [ "$1" = "upgrade" ] || [ "$1" = install ]; then
 fi
 # end-remove-after
 
+if [ "$1" = "upgrade" ] || [ "$1" = install ]; then
+    # https://bugs.debian.org/1102626
+    if dpkg-maintscript-helper supports mv_conffile; then
+    dpkg-maintscript-helper mv_conffile \
+        /etc/apparmor.d/sbin.dhclient /etc/apparmor.d/usr.sbin.dhclient 4.4.3-P1-7~ -- "$@"
+    fi
+fi
+
 #DEBHELPER#

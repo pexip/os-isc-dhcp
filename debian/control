@@ -38,7 +38,7 @@ Suggests:
  polkitd,
  isc-dhcp-server-ldap,
  ieee-data
-Description: ISC DHCP server for automatic IP address assignment
+Description: ISC DHCP server for automatic IP address assignment (deprecated)
  This is the Internet Software Consortium's DHCP server.
  .
  Dynamic Host Configuration Protocol (DHCP) is a protocol like BOOTP
@@ -47,6 +47,9 @@ Description: ISC DHCP server for automatic IP address assignment
  automatically set their network configuration.
  .
  This server can handle multiple ethernet interfaces.
+ .
+ ISC has deprecated the DHCP project in favor of Kea. See:
+ https://www.isc.org/blogs/isc-dhcp-eol/.
 
 Package: isc-dhcp-server-ldap
 Priority: optional
@@ -59,7 +62,7 @@ Depends:
 Conflicts:
  dhcp,
 Enhances: isc-dhcp-server
-Description: DHCP server that uses LDAP as its backend
+Description: DHCP server that uses LDAP as its backend (deprecated)
  This is the server from the Internet Software Consortium's implementation of
  DHCP.
  .
@@ -69,18 +72,24 @@ Description: DHCP server that uses LDAP as its backend
  automatically set their network configuration.
  .
  This is the DHCP server with LDAP patches applied to it.
+ .
+ ISC has deprecated the DHCP project in favor of Kea. See:
+ https://www.isc.org/blogs/isc-dhcp-eol/.
 
 Package: isc-dhcp-common
 Architecture: any
 Depends:
  ${misc:Depends},
  debianutils (>= 2.8.2),
-Description: common manpages relevant to all of the isc-dhcp packages
+Description: common manpages relevant to all of the isc-dhcp packages (deprecated)
  This package includes manpages that are relevant to the various ISC DHCP
  packages.
  .
  The dhcp-options manpage describes available options for dhcpd and dhclient.
  The dhcp-eval manpage describes evaluation of conditional expressions.
+ .
+ ISC has deprecated the DHCP project. See:
+ https://www.isc.org/blogs/isc-dhcp-eol/.
 
 Package: isc-dhcp-dev
 Priority: optional
@@ -89,10 +98,13 @@ Section: devel
 Depends:
  ${misc:Depends},
  libc6-dev,
-Description: API for accessing and modifying the DHCP server and client state
+Description: API for accessing and modifying the DHCP server and client state (deprecated)
  This package provides support for OMAPI (Object Management Application
  Programming Interface), which is an API for accessing and modifying the DHCP
  server and client state.
+ .
+ ISC has deprecated the DHCP project. See:
+ https://www.isc.org/blogs/isc-dhcp-eol/.
 
 Package: isc-dhcp-client
 Architecture: any
@@ -111,7 +123,7 @@ Provides:
  dhcp-client,
 Conflicts:
  isc-dhcp-client-ddns (<< 4.4.3-P1-4.1),
-Description: DHCP client for automatically obtaining an IP address
+Description: DHCP client for automatically obtaining an IP address (deprecated)
  This is the Internet Software Consortium's DHCP client.
  .
  Dynamic Host Configuration Protocol (DHCP) is a protocol like BOOTP
@@ -131,6 +143,9 @@ Description: DHCP client for automatically obtaining an IP address
  .
  More information can be found in the ISC official announcement:
  https://www.isc.org/blogs/dhcp-client-relay-eom/
+ .
+ ISC has deprecated the DHCP project. See:
+ https://www.isc.org/blogs/isc-dhcp-eol/.
 
 Package: isc-dhcp-client-ddns
 Priority: optional
@@ -140,7 +155,7 @@ Depends:
  ${shlibs:Depends},
  isc-dhcp-client (= ${binary:Version}),
 Enhances: isc-dhcp-client
-Description: Dynamic DNS (DDNS) enabled DHCP client
+Description: Dynamic DNS (DDNS) enabled DHCP client (deprecated)
  This a Dynamic DNS enabled version of the DHCP client.
  .
  Dynamic Host Configuration Protocol (DHCP) is a protocol like BOOTP
@@ -152,6 +167,9 @@ Description: Dynamic DNS (DDNS) enabled DHCP client
  another DHCP client installed.
  .
  Extra documentation can be found in the package isc-dhcp-common.
+ .
+ ISC has deprecated the DHCP project. See:
+ https://www.isc.org/blogs/isc-dhcp-eol/.
 
 Package: isc-dhcp-client-udeb
 Priority: important
@@ -160,7 +178,7 @@ Section: debian-installer
 Depends:
  ${shlibs:Depends},
 Package-Type: udeb
-Description: ISC DHCP Client for debian-installer
+Description: ISC DHCP Client for debian-installer (deprecated)
 
 Package: isc-dhcp-relay
 Priority: optional
@@ -173,7 +191,7 @@ Recommends:
  isc-dhcp-common,
 Conflicts:
  dhcp-relay,
-Description: ISC DHCP relay daemon
+Description: ISC DHCP relay daemon (deprecated)
  This is the Internet Software Consortium's DHCP relay.
  .
  Installing this package will make the machine a DHCP relay, which
@@ -188,6 +206,9 @@ Description: ISC DHCP relay daemon
  .
  More information can be found in the ISC official announcement:
  https://www.isc.org/blogs/dhcp-client-relay-eom/
+ .
+ ISC has deprecated the DHCP project. See:
+ https://www.isc.org/blogs/isc-dhcp-eol/.
 
 Package: isc-dhcp-keama
 Priority: optional
