@@ -111,7 +111,7 @@ override_dh_install:
 	    -e 's/CLIENTBINDIR/\/usr\/sbin/g' \
 	    -e 's/DBDIR/\/var\/lib\/dhcp/g' \
 	    -i debian/tmp/usr/share/man/man*/*
-	dh_apparmor -pisc-dhcp-client --profile-name=sbin.dhclient
+	dh_apparmor -pisc-dhcp-client --profile-name=usr.sbin.dhclient
 	dh_apparmor -pisc-dhcp-server --profile-name=usr.sbin.dhcpd
 
 override_dh_installinit:

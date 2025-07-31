@@ -73,7 +73,7 @@
   signal (receive) peer=/usr/libexec/nm-dhcp-helper,
 
   # Site-specific additions and overrides. See local/README for details.
-  #include <local/sbin.dhclient>
+  #include <local/usr.sbin.dhclient>
 }
 
 /usr/lib/NetworkManager/nm-dhcp-client.action {
