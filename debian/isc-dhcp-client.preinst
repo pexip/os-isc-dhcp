@@ -20,6 +20,8 @@ if [ "$1" = "upgrade" ] || [ "$1" = install ]; then
     dpkg-maintscript-helper mv_conffile \
         /etc/apparmor.d/sbin.dhclient /etc/apparmor.d/usr.sbin.dhclient 4.4.3-P1-7~ -- "$@"
     fi
+    # ^ that mv_conffile seems dodgy, so make sure the old file is gone
+    rm -f /etc/apparmor.d/sbin.dhclient
 fi
 
 #DEBHELPER#
