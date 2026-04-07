@@ -1,3 +1,11 @@
+isc-dhcp (4.4.3-P1-8+pexip25u4) pexip-trixie; urgency=medium
+
+  * dhclient: actually ensure old appamor profile is removed
+    /etc/apparmor.d/sbin.dhclient was fine (as it was being done in the preinst), but
+    /etc/apparmor.d/local/sbin.dhclient wasn't (as it was being done in the postinst).
+
+ -- Huw Jones <huw@pexip.com>  Tue, 07 Apr 2026 17:09:41 +0100
+
 isc-dhcp (4.4.3-P1-8+pexip25u3) pexip-trixie; urgency=medium
 
   * dhclient: ensure old appamor profile is removed
