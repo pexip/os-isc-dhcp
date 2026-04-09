@@ -22,10 +22,10 @@ if [ "$1" = "upgrade" ] || [ "$1" = install ]; then
     fi
 
     # https://bugs.debian.org/1103503
-    if dpkg-maintscript-helper supports mv_conffile; then
-    dpkg-maintscript-helper mv_conffile \
-        /etc/apparmor.d/local/sbin.dhclient /etc/apparmor.d/local/usr.sbin.dhclient 4.4.3-P1-8~ -- "$@"
-    fi
+    # This file was created in the postinst of prior versions so dpkg doesn't know it belongs
+    # to the package, so it'll refuse to move it. It'll be re-created in the postinst of
+    # the new version anyway, so blat it from existance.
+    rm -f /etc/apparmor.d/local/sbin.dhclient
 fi
 
 #DEBHELPER#

@@ -1,3 +1,9 @@
+isc-dhcp (4.4.3-P1-8+pexip25u5) pexip-trixie; urgency=medium
+
+  * dhclient: actually actually ensure old appamor profile is removed
+
+ -- Huw Jones <huw@pexip.com>  Thu, 09 Apr 2026 18:08:40 +0100
+
 isc-dhcp (4.4.3-P1-8+pexip25u4) pexip-trixie; urgency=medium
 
   * dhclient: actually ensure old appamor profile is removed
